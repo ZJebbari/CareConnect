@@ -1,4 +1,5 @@
 ﻿
+using CareConnect.Models.Database.results;
 using CareConnect.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +7,7 @@ namespace CareConnect.Services
 {
     public class PatientService(IPatientRepository _patientRepository) : IPatientService
     {
-        public async Task<IEnumerable<PatientDto>> GetAllPatients()
+        public async Task<IEnumerable<PatientResult>> GetAllPatients()
         {
             return await _patientRepository.GetAllPatients();
         }

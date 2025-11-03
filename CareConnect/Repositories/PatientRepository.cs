@@ -1,21 +1,22 @@
 ﻿using CareConnect.Common;
-using CareConnect.Models;
+using CareConnect.Models.Database.results;
+using CareConnect.Models.Dtos;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Transactions;
-using Dapper;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CareConnect.Repositories
 {
     public class PatientRepository (CareConnectContext _context, IDbSession _session) : BaseRepository(_session), IPatientRepository
     {
-        public async Task<IEnumerable<PatientDto>> GetAllPatients()
+        public async Task<IEnumerable<PatientResult>> GetAllPatients()
         {
-            var result = await Connection.QueryAsync<PatientDto>(
-                "GetAllPatients",
+            var result = await Connection.QueryAsync<PatientResult>(
+                "usp_Patient_GetAll",
                 commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction
             );

@@ -1,0 +1,25 @@
+.cc-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .logo {
+    height: 200px;
+    width: auto;
+  }
+}
+
+.cc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+
+  mat-icon {
+    font-size: 26px;
+  }
+
+  .user-name {
+    font-weight: 500;
+  }
+}

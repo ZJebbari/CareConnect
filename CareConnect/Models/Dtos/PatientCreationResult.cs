@@ -1,4 +1,4 @@
-﻿namespace CareConnect.Models
+﻿namespace CareConnect.Models.Dtos
 {
     public class PatientCreationResult
     {

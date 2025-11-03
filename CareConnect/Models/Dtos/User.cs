@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CareConnect.Models;
+namespace CareConnect.Models.Dtos;
 
 public partial class User
 {

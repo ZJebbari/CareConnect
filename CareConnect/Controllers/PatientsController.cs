@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CareConnect.Models;
+﻿using CareConnect.Models;
+using CareConnect.Models.Database.results;
 using CareConnect.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CareConnect.Controllers
 {
@@ -11,7 +12,7 @@ namespace CareConnect.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatientDto>>> GetAllPatients()
+        public async Task<ActionResult<IEnumerable<PatientResult>>> GetAllPatients()
         {
             var patients = await _patientService.GetAllPatients();
             return Ok(patients);

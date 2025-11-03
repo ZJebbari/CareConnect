@@ -1,0 +1,151 @@
+@use "@angular/material" as mat;
+
+// 1. Define your M3 theme config object
+$careconnect-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
+
+// 2. Apply the theme styles inside a selector
+// We'll use :root so it's global for the whole app
+:root {
+  // Generate all Material component styles with this theme
+  @include mat.all-component-themes($careconnect-theme);
+
+  // Custom button variants that you will use in templates
+
+  // main / primary action
+  .cc-primary {
+    @include mat.button-color(
+      $theme: $careconnect-theme,
+      $color-variant: "primary"
+    );
+  }
+
+  // secondary / alt action
+  .cc-tertiary {
+    @include mat.button-color(
+      $theme: $careconnect-theme,
+      $color-variant: "tertiary"
+    );
+  }
+
+  // destructive / danger action
+  // even though "error" wasn't defined in the theme.color config,
+  // mat.button-color still knows how to style an `error` variant
+  .cc-error {
+    @include mat.button-color(
+      $theme: $careconnect-theme,
+      $color-variant: "error"
+    );
+  }
+
+  .cc-header {
+    background-color: #000000;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    height: 64px;
+  }
+
+  // =======================
+  // Input field variants
+  // =======================
+
+  // Primary-looking field (blue focus/outline/etc)
+  .cc-input-primary {
+    // Pull in core form-field styles for our theme
+    @include mat.form-field-color($careconnect-theme);
+    @include mat.input-color($careconnect-theme);
+
+    // You can customize details:
+    .mat-mdc-text-field-wrapper {
+      --mdc-outlined-text-field-outline-color: rgb(
+        33,
+        80,
+        164
+      ); // border default
+      --mdc-outlined-text-field-focus-outline-color: rgb(
+        33,
+        80,
+        200
+      ); // border when focused
+      --mdc-outlined-text-field-hover-outline-color: rgb(33, 80, 180);
+    }
+
+    .mdc-floating-label {
+      color: rgb(33, 80, 164);
+    }
+
+    .mdc-text-field__input {
+      caret-color: rgb(33, 80, 200);
+      color: rgb(23, 43, 77);
+    }
+  }
+
+  // Tertiary-looking field (cyan / accent vibe)
+  .cc-input-tertiary {
+    @include mat.form-field-color($careconnect-theme);
+    @include mat.input-color($careconnect-theme);
+
+    .mat-mdc-text-field-wrapper {
+      --mdc-outlined-text-field-outline-color: rgb(0, 132, 155);
+      --mdc-outlined-text-field-focus-outline-color: rgb(0, 178, 200);
+      --mdc-outlined-text-field-hover-outline-color: rgb(0, 160, 180);
+    }
+
+    .mdc-floating-label {
+      color: rgb(0, 132, 155);
+    }
+
+    .mdc-text-field__input {
+      caret-color: rgb(0, 178, 200);
+      color: rgb(0, 70, 80);
+    }
+  }
+
+  // Error-looking field (red / danger)
+  .cc-input-error {
+    @include mat.form-field-color($careconnect-theme);
+    @include mat.input-color($careconnect-theme);
+
+    .mat-mdc-text-field-wrapper {
+      --mdc-outlined-text-field-outline-color: rgb(180, 0, 0);
+      --mdc-outlined-text-field-focus-outline-color: rgb(220, 0, 0);
+      --mdc-outlined-text-field-hover-outline-color: rgb(200, 0, 0);
+    }
+
+    .mdc-floating-label {
+      color: rgb(180, 0, 0);
+    }
+
+    .mdc-text-field__input {
+      caret-color: rgb(220, 0, 0);
+      color: rgb(120, 0, 0);
+    }
+
+    mat-error {
+      color: rgb(180, 0, 0);
+      font-weight: 500;
+    }
+  }
+}
+
+// 3. Optional global layout / typography
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
