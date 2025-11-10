@@ -1,148 +1,372 @@
 @use "@angular/material" as mat;
 
-// 1. Define your M3 theme config object
-$careconnect-theme: mat.define-theme(
+// 1️⃣ Define palettes (M2 palettes in Angular 19)
+$careconnect-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 600);
+$careconnect-accent: mat.m2-define-palette(
+  mat.$m2-pink-palette,
+  A200,
+  A100,
+  A400
+);
+$careconnect-warn: mat.m2-define-palette(mat.$m2-red-palette, 600);
+
+// 2️⃣ Create the M2 light theme
+$careconnect-theme: mat.m2-define-light-theme(
   (
     color: (
-      theme-type: light,
-      primary: mat.$azure-palette,
-      tertiary: mat.$cyan-palette,
+      primary: $careconnect-primary,
+      accent: $careconnect-accent,
+      warn: $careconnect-warn,
     ),
-    density: (
-      scale: 0,
-    ),
+    typography: mat.m2-define-typography-config(),
+    density: 0,
   )
 );
 
-// 2. Apply the theme styles inside a selector
-// We'll use :root so it's global for the whole app
 :root {
-  // Generate all Material component styles with this theme
-  @include mat.all-component-themes($careconnect-theme);
+  --white: #fff;
+  --lightGrayBackground: #ededed;
+  --darkGrayBackground: #29292a;
+  --lightPrimary: #0073c8;
 
-  // Custom button variants that you will use in templates
+  --page-side-margin: 10px;
+  --action-bar-height: 64px;
+  --hl-banner-height: 64px;
+  --paginator-height: 55px;
+  --page-height: calc(
+    100vh - var(--action-bar-height) - var(--hl-banner-height)
+  );
+  --filter-bar-height: 60px;
+  --filter-chip-container-height: 40px;
+  --table-border-radius: 15px;
+}
 
-  // main / primary action
-  .cc-primary {
-    @include mat.button-color(
-      $theme: $careconnect-theme,
-      $color-variant: "primary"
+// Page
+.page-container {
+  margin: var(--page-side-margin);
+  border-radius: var(--table-border-radius) !important;
+}
+
+// Table
+.no-data-row-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+}
+
+.no-data-row-span {
+  font-weight: bold;
+}
+
+.paginator {
+  @include mat.elevation(8);
+  height: var(--paginator-height);
+  border-radius: 0 0 var(--table-border-radius) var(--table-border-radius) !important;
+}
+
+.table-container {
+  @include mat.elevation(8);
+  overflow: auto;
+  border-radius: var(--table-border-radius) 0 0 !important;
+
+  // default table (page + paginator)
+  &.table-default {
+    height: calc(
+      var(--page-height) - var(--paginator-height) -
+        (2 * var(--page-side-margin))
     );
+
+    // default but NO paginator
+    &.table-paginatorless {
+      height: calc(var(--page-height) - (2 * var(--page-side-margin)));
+    }
   }
 
-  // secondary / alt action
-  .cc-tertiary {
-    @include mat.button-color(
-      $theme: $careconnect-theme,
-      $color-variant: "tertiary"
+  // when summary panel OR filter bar is open
+  &.table-summary-panel-open,
+  &.table-filter-bar-open {
+    height: calc(
+      var(--page-height) - var(--paginator-height) -
+        (2 * var(--page-side-margin)) - var(--filter-bar-height)
     );
+
+    &.table-paginatorless {
+      height: calc(
+        var(--page-height) - (2 * var(--page-side-margin)) -
+          var(--filter-bar-height)
+      );
+    }
   }
 
-  // destructive / danger action
-  // even though "error" wasn't defined in the theme.color config,
-  // mat.button-color still knows how to style an `error` variant
-  .cc-error {
-    @include mat.button-color(
-      $theme: $careconnect-theme,
-      $color-variant: "error"
+  // when the mat-chip (your chip container) is open
+  &.table-mat-chip-open {
+    height: calc(
+      var(--page-height) - var(--paginator-height) -
+        (2 * var(--page-side-margin)) - var(--filter-bar-height) -
+        var(--filter-chip-container-height)
     );
-  }
 
-  .cc-header {
-    background-color: #000000;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-    height: 64px;
-  }
-
-  // =======================
-  // Input field variants
-  // =======================
-
-  // Primary-looking field (blue focus/outline/etc)
-  .cc-input-primary {
-    // Pull in core form-field styles for our theme
-    @include mat.form-field-color($careconnect-theme);
-    @include mat.input-color($careconnect-theme);
-
-    // You can customize details:
-    .mat-mdc-text-field-wrapper {
-      --mdc-outlined-text-field-outline-color: rgb(
-        33,
-        80,
-        164
-      ); // border default
-      --mdc-outlined-text-field-focus-outline-color: rgb(
-        33,
-        80,
-        200
-      ); // border when focused
-      --mdc-outlined-text-field-hover-outline-color: rgb(33, 80, 180);
-    }
-
-    .mdc-floating-label {
-      color: rgb(33, 80, 164);
-    }
-
-    .mdc-text-field__input {
-      caret-color: rgb(33, 80, 200);
-      color: rgb(23, 43, 77);
+    &.table-paginatorless {
+      height: calc(
+        var(--page-height) - (2 * var(--page-side-margin)) -
+          var(--filter-bar-height) - var(--filter-chip-container-height)
+      );
     }
   }
 
-  // Tertiary-looking field (cyan / accent vibe)
-  .cc-input-tertiary {
-    @include mat.form-field-color($careconnect-theme);
-    @include mat.input-color($careconnect-theme);
+  // filter bar + summary open together
+  &.table-filter-bar-and-summary-open {
+    height: calc(
+      var(--page-height) - var(--paginator-height) -
+        (2 * var(--page-side-margin)) - var(--filter-bar-height) -
+        var(--filter-chip-container-height)
+    );
 
-    .mat-mdc-text-field-wrapper {
-      --mdc-outlined-text-field-outline-color: rgb(0, 132, 155);
-      --mdc-outlined-text-field-focus-outline-color: rgb(0, 178, 200);
-      --mdc-outlined-text-field-hover-outline-color: rgb(0, 160, 180);
-    }
-
-    .mdc-floating-label {
-      color: rgb(0, 132, 155);
-    }
-
-    .mdc-text-field__input {
-      caret-color: rgb(0, 178, 200);
-      color: rgb(0, 70, 80);
+    &.table-paginatorless {
+      height: calc(
+        var(--page-height) - (2 * var(--page-side-margin)) -
+          var(--filter-bar-height) - var(--filter-chip-container-height)
+      );
     }
   }
 
-  // Error-looking field (red / danger)
-  .cc-input-error {
-    @include mat.form-field-color($careconnect-theme);
-    @include mat.input-color($careconnect-theme);
+  // EVERYTHING open
+  &.table-all-open {
+    height: calc(
+      var(--page-height) - var(--paginator-height) -
+        (2 * var(--page-side-margin)) - var(--filter-bar-height) -
+        var(--filter-chip-container-height)
+    );
 
-    .mat-mdc-text-field-wrapper {
-      --mdc-outlined-text-field-outline-color: rgb(180, 0, 0);
-      --mdc-outlined-text-field-focus-outline-color: rgb(220, 0, 0);
-      --mdc-outlined-text-field-hover-outline-color: rgb(200, 0, 0);
-    }
-
-    .mdc-floating-label {
-      color: rgb(180, 0, 0);
-    }
-
-    .mdc-text-field__input {
-      caret-color: rgb(220, 0, 0);
-      color: rgb(120, 0, 0);
-    }
-
-    mat-error {
-      color: rgb(180, 0, 0);
-      font-weight: 500;
+    &.table-paginatorless {
+      height: calc(
+        var(--page-height) - (2 * var(--page-side-margin)) -
+          var(--filter-bar-height) - var(--filter-chip-container-height)
+      );
     }
   }
 }
 
-// 3. Optional global layout / typography
+tr.table-expansion-row {
+  height: 0;
+}
+
+tr.table-expansion-td {
+  padding: 0 !important;
+}
+
+td.standard-expansion-td {
+  padding: 0 !important;
+}
+
+// Action Bar
+.action-bar-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: var(--action-bar-height);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  gap: 10px;
+}
+
+.action-bar-content {
+  display: flex;
+  gap: 10px;
+}
+
+.action-bar-search {
+  width: 240px;
+}
+
+.action-bar-title-container {
+  display: flex;
+  align-items: center;
+
+  span {
+    font-size: 26pt;
+    font-weight: lighter;
+  }
+
+  @media only screen and (max-width: 1100px) {
+    span {
+      font-size: 20pt;
+    }
+  }
+}
+
+.action-bar-search-icon {
+  position: relative;
+  transform: scale(1.25);
+}
+
+.action-bar-clear-button {
+  margin-top: -13px;
+}
+
+.filter-button {
+  @extend .standard-button;
+
+  @media only screen and (max-width: 1100px) {
+    .mat-icon {
+      margin-right: 0 !important;
+    }
+
+    span {
+      display: none;
+    }
+  }
+}
+
+// Filter Bar
+.lms-filter-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 25px;
+  border-bottom: 1px solid #ccc;
+}
+
+.filter-chip-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding: 0 20px;
+}
+
+.filter-bar-title {
+  font-weight: 600;
+  font-size: 11pt;
+}
+
+// Dialog
+.dialog-button {
+  text-transform: uppercase !important;
+}
+
+// Common
+.lms-clickable {
+  cursor: pointer;
+}
+
+.standard-button {
+  height: 48px !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  font-size: 15px !important;
+  text-align: center;
+  padding: 22.5px 22.5px !important;
+
+  mat-icon {
+    min-width: 16px !important;
+  }
+}
+
+.standard-icon {
+  font-size: 15px;
+  text-align: center;
+  align-content: space-evenly;
+}
+
+// Expansion Panel
+.expansion-panel-container {
+  border: 1px black solid;
+}
+
+.expansion-panel-section {
+  margin: 10px;
+  padding: 20px;
+  background-color: #e9fdfb;
+  border-radius: 10px;
+}
+
+.expansion-panel-content-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.expansion-panel-content {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+// Light / Dark Mode Theming
+@mixin light() {
+  .action-bar-container {
+    background-color: var(--lightGrayBackground);
+  }
+
+  tr.table-row:not(.table-row-expanded):hover {
+    background: whitesmoke;
+  }
+
+  tr.table-row-expanded {
+    background-color: #333 !important;
+    color: var(--white);
+
+    mat-checkbox {
+      --mdc-checkbox-unselected-icon-color: var(--white);
+      --mdc-checkbox-selected-hover-state-layer-color: var(--white);
+      --mdc-checkbox-unselected-focus-icon-color: var(--white);
+      --mdc-checkbox-unselected-focus-state-layer-color: var(--white);
+    }
+  }
+
+  .filter-button-active {
+    border-color: var(--lightPrimary) !important;
+  }
+
+  .dialog-button:disabled {
+    color: rgba(0, 0, 0, 0.38) !important;
+  }
+}
+
+@mixin dark() {
+  .action-bar-container {
+    background-color: var(--darkGrayBackground);
+  }
+
+  tr.table-row:not(.table-row-expanded):hover {
+    background: rgb(92, 92, 92);
+  }
+
+  tr.table-row-expanded {
+    background-color: #495052 !important;
+  }
+
+  .filter-button-active {
+    border-color: var(--darkPrimary) !important;
+  }
+
+  .dialog-button:disabled {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .expansion-panel-section {
+    background-color: #303030;
+  }
+}
+
+.hl-light-theme {
+  @include light();
+}
+
+.hl-dark-theme {
+  @include dark();
+}
+
+// 3️⃣ Generate ALL Material styles for this theme
+@include mat.all-component-themes($careconnect-theme);
+
+// OPTIONAL: your app layout styles
 html,
 body {
   height: 100%;

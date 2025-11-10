@@ -13,7 +13,6 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class PatientsComponent {
   public readonly patients = computed(() => {
-    debugger;
     return this.dataService.patientData() ?? [];
   });
 

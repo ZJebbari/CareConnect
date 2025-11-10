@@ -1,0 +1,46 @@
+<div class="expansion-panel-container">
+  <div class="expansion-panel-section mat-elevation-z3">
+    <div class="expansion-panel-content-container">
+      <div class="expansion-panel-content">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name</mat-label>
+          <input matInput name="fullName" type="text" #fullNameModel="ngModel" [ngModel]="fullName()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>D.O.B</mat-label>
+          <input matInput name="dateOfBirth" type="text" #dateOfBirthModel="ngModel" [ngModel]="dateOfBirth()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Gender</mat-label>
+          <input matInput name="gender" type="text" #genderModel="ngModel" [ngModel]="gender()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Address</mat-label>
+          <input matInput name="address" type="text" #addressModel="ngModel" [ngModel]="address()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput name="phone" type="text" pattern="\d{10}" #phoneModel="ngModel" [ngModel]="phone()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput name="email" type="text" #emailModel="ngModel" [ngModel]="email()" />
+        </mat-form-field>
+      </div>
+
+      <div class="expansion-panel-content">
+        <button mat-flat-button color="warn" class="standard-button" (click)="deleteCarrier()">
+          Delete Carrier
+        </button>
+        <button mat-flat-button color="primary" class="standard-button" (click)="updateCarrier()">
+          Update Carrier
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

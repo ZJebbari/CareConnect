@@ -1,0 +1,103 @@
+<app-navbar></app-navbar>
+  <div class="page-container" cdkScrollable>
+    <div class="table-container table-default">
+      <table mat-table multiTemplateDataRows [dataSource]="dataSource()" matSort>
+        <!-- Full Name -->
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.fullName }}</td>
+        </ng-container>
+
+        <!-- D.O.B -->
+        <ng-container matColumnDef="dateOfBirth">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>D.O.B</th>
+          <td mat-cell *matCellDef="let element">{{ element.dateOfBirth | date : 'shortDate' }}</td>
+        </ng-container>
+
+        <!-- Gender -->
+        <ng-container matColumnDef="gender">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Gender</th>
+          <td mat-cell *matCellDef="let element">{{ element.gender }}</td>
+        </ng-container>
+
+        <!-- Address -->
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
+          <td mat-cell *matCellDef="let element">{{ element.address }}</td>
+        </ng-container>
+
+        <!-- Phone -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+          <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+        </ng-container>
+        
+        <!-- Chevron -->
+        <ng-container matColumnDef="chevron">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            @if(element != null){
+              <mat-icon [@chevron]="((element == expandedPatient)) ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Expanded Detail Row -->
+        <ng-container matColumnDef="expandedDetail">
+          <td
+            mat-cell
+            *matCellDef="let element"
+            [attr.colspan]="displayedColumns.length"
+            class="standard-expansion-td">
+            @if (element === expandedPatient) {
+              <div [@expansionPanelSlide]>
+                <app-patient-details
+                [fullName]="element.fullName"
+                [dateOfBirth]="element.dateOfBirth | date: 'shortDate'"
+                [gender]="element.gender"
+                [address]="element.address"
+                [phone]="element.phone"
+                [email]="element.email">
+              </app-patient-details>
+            </div>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Header -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+
+        <!-- Data Row -->
+        <tr
+          mat-row
+          *matRowDef="let element; columns: displayedColumns"
+          (click)="expandClick(element)"
+          class="clickable table-row"
+          [class.table-row-expanded]="expandedPatient === element">
+        </tr>
+
+        <!-- Expansion Row -->
+        <tr
+          mat-row
+          *matRowDef="let row; columns: ['expandedDetail'];"
+          class="table-expansion-row">
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator 
+    showFirstLastButtons
+    [pageSizeOptions]="[CC_UI.DEFAULT_PAGINATION_OPTION]"
+    [length]="patients().length" 
+    [pageSize]="this.pageSize()" 
+    [pageIndex]="this.pageIndex()"
+    (page)="onPageChange($event)"
+    >
+  </mat-paginator>
+  </div>

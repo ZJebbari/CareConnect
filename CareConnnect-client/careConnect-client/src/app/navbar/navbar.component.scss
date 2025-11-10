@@ -1,0 +1,42 @@
+.container {
+  background-color: #f5f7fa;
+  padding: 0.75rem 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.header h1 {
+  margin: 0; // remove default h1 margin
+  line-height: 1.1;
+  font-size: 3rem;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center; // center vertically
+  gap: 10px;
+}
+
+/* normalize mat-form-field vertical spacing */
+mat-form-field {
+  margin: 0;
+  padding: 0 !important;
+  line-height: normal;
+  height: 56px; // match button height
+  display: flex;
+  align-items: center;
+
+  .mat-mdc-form-field-flex {
+    align-items: center; // center input inside
+  }
+}
+
+/* make button same height */
+.mat-mdc-raised-button.mat-primary {
+  background-color: #00a9a5;
+  color: #fff;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}

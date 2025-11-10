@@ -1,0 +1,21 @@
+<div class="action-bar-container">
+  <div class="action-bar-title-container">
+    <span>Admin</span>
+  </div>
+
+  <div class="action-bar-content">
+    <mat-form-field class="action-bar-search" subscriptSizing="dynamic">
+      <mat-label><mat-icon class="action-bar-search-icon">search</mat-icon>&nbsp; Search</mat-label>
+      <input matInput type="text"/>
+      @if (true){
+        <button matSuffix mat-icon-button class="action-bar-clear-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <button mat-raised-button class="standard-button" color="primary">
+      <span>Filter</span>
+    </button>
+  </div>
+</div>

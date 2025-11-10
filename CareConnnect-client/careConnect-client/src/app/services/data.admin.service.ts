@@ -5,10 +5,10 @@ import { PatientService } from './patient.service';
 @Injectable({
   providedIn: 'root',
 })
-export class dataPatientService {
+export class dataAdminService {
   private patients = signal<PatientResult[]>([]);
   public patientData = computed(() => {
-    return this.patients;
+    return this.patients();
   });
 
   constructor(private api: PatientService) {
