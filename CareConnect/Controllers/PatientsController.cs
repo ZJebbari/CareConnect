@@ -18,6 +18,13 @@ namespace CareConnect.Controllers
             return Ok(patients);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdatePatient([FromBody] PatientDto patient)
+        {
+            var result = await _patientService.UpdatePatient(patient);
+            return Ok(result);
+        }
+
         [HttpGet("id")]
         public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatientByID([FromQuery] long patientID)
         {

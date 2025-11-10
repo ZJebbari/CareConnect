@@ -58,8 +58,9 @@
             @if (element === expandedPatient) {
               <div [@expansionPanelSlide]>
                 <app-patient-details
+                [userId]="element.userId"
                 [fullName]="element.fullName"
-                [dateOfBirth]="element.dateOfBirth | date: 'shortDate'"
+                [dateOfBirth]="element.dateOfBirth"
                 [gender]="element.gender"
                 [address]="element.address"
                 [phone]="element.phone"

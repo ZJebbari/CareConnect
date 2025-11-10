@@ -12,6 +12,11 @@ namespace CareConnect.Services
             return await _patientRepository.GetAllPatients();
         }
 
+        public async Task<string> UpdatePatient(PatientDto patient)
+        {
+            return await _patientRepository.UpdatePatient(patient);
+        }
+
         public async Task<IEnumerable<PatientDto>> GetPatientByID(long patientID)
         {
             return await _patientRepository.GetPatientByID(patientID);

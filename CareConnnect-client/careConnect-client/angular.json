@@ -59,7 +59,8 @@
               "buildTarget": "careConnect-frontend:build:production"
             },
             "development": {
-              "buildTarget": "careConnect-frontend:build:development"
+              "buildTarget": "careConnect-frontend:build:development",
+               "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

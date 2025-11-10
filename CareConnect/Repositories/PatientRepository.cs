@@ -24,6 +24,26 @@ namespace CareConnect.Repositories
             return result;
         }
 
+        public async Task<string> UpdatePatient(PatientDto patient)
+        {
+            var result = await Connection.QuerySingleAsync<string>(
+                "usp_Patient_Update",
+                new
+                {
+                    UserID = patient.UserId,
+                    FullName = patient.FullName,
+                    Email = patient.Email,
+                    Phone = patient.Phone,
+                    DateOfBirth = patient.DateOfBirth,
+                    Address = patient.Address,
+                    Gender = patient.Gender
+
+                },
+                 commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+                );
+            return result;
+        }
 
         public async Task<IEnumerable<PatientDto>> GetPatientByID(long patientID)
         {
@@ -56,9 +76,7 @@ namespace CareConnect.Repositories
                   {
                       parms.FullName,
                       parms.Email,
-                      parms.Password,
                       parms.Phone,
-                      parms.RoleID,
                       parms.DateOfBirth,
                       parms.Address,
                       parms.Gender
