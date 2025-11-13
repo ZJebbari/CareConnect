@@ -4,32 +4,38 @@
       <div class="expansion-panel-content">
         <mat-form-field appearance="outline">
           <mat-label>Full Name</mat-label>
-          <input matInput name="fullName" type="text" #fullNameModel="ngModel" [ngModel]="fullName()" />
+          <input matInput name="fullName" type="text" (blur)="restoreFullNameIfEmpty()" #fullNameModel="ngModel" [ngModel]="fullName()" (ngModelChange)="this.fullName.set($event)" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>D.O.B</mat-label>
-          <input matInput name="dateOfBirth" type="text" #dateOfBirthModel="ngModel" [ngModel]="dateOfBirth()" />
+          <input matInput name="dateOfBirth" (blur)="restoreDateOfBirthIfEmpty()" #dateOfBirthModel="ngModel" [ngModel]="dateOfBirth()" (ngModelChange)="dateOfBirthChanged($event)" [matDatepicker]="picker">
+          <mat-hint>MM/DD/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Gender</mat-label>
-          <input matInput name="gender" type="text" #genderModel="ngModel" [ngModel]="gender()" />
+          <mat-select name="gender" #genderModel="ngModel" [ngModel]="gender()" (ngModelChange)="this.gender.set($event)">
+            <mat-option value="Male">Male</mat-option>
+            <mat-option value="Female">Female</mat-option>
+          </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Address</mat-label>
-          <input matInput name="address" type="text" #addressModel="ngModel" [ngModel]="address()" />
+          <input matInput name="address" type="text" (blur)="restoreAddressIfEmpty()" #addressModel="ngModel" [ngModel]="address()" (ngModelChange)="this.address.set($event)" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Phone</mat-label>
-          <input matInput name="phone" type="text" pattern="\d{10}" #phoneModel="ngModel" [ngModel]="phone()" />
+          <input matInput name="phone" type="text" (blur)="restorePhoneIfEmpty()" #phoneModel="ngModel" [ngModel]="phone()" (ngModelChange)="this.phone.set($event)" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
-          <input matInput name="email" type="text" #emailModel="ngModel" [ngModel]="email()" />
+          <input matInput name="email" type="email" (blur)="restoreEmailIfEmpty()" #emailModel="ngModel" [ngModel]="email()" (ngModelChange)="this.email.set($event)" />
         </mat-form-field>
       </div>
 
@@ -37,7 +43,7 @@
         <button mat-flat-button color="warn" class="standard-button" (click)="deletePatient()">
           Delete Patient
         </button>
-        <button mat-flat-button color="primary" class="standard-button" (click)="updatePatient()">
+        <button mat-flat-button color="primary" class="standard-button" (click)="updatePatient()" [disabled]="!isDirty()">
           Update Patient
         </button>
       </div>

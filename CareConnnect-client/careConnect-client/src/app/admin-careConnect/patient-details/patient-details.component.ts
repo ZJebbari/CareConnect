@@ -1,4 +1,4 @@
-import { Component, computed, inject, model, signal } from '@angular/core';
+import { Component, computed, effect, inject, model, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,9 +7,13 @@ import { Subscription } from 'rxjs';
 import { ConfirmationDialogComponent } from '../../reusables/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AdminService } from '../../services/admin.service';
+import { Helper } from '../../helper/helper';
+import { MatSelectModule } from '@angular/material/select';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 @Component({
   selector: 'app-patient-details',
-  imports: [MatFormFieldModule, FormsModule, MatInputModule, MatButtonModule],
+  imports: [MatFormFieldModule, FormsModule, MatInputModule, MatButtonModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './patient-details.component.html',
   styleUrl: './patient-details.component.scss',
 })
@@ -56,25 +60,40 @@ export class PatientDetailsComponent {
   }
 
   // Detect unsaved changes
-  isDirty = computed(() => {
-  const current = this.dateOfBirth();
-  const original = this.original().dateOfBirth;
-
-  const sameDate =
-    current instanceof Date &&
-    original instanceof Date &&
-    current.toDateString() === original.toDateString();
-
-  return (
-    (this.fullName()?.trim().length ?? 0 > 0) &&
-    (!sameDate ||
-      (this.gender() ?? '').trim() !== this.original().gender ||
-      (this.address() ?? '').trim() !== this.original().address ||
-      (this.phone() ?? '').trim() !== this.original().phone ||
-      (this.email() ?? '').trim() !== this.original().email)
-  );
+ public isDirty = computed(() => {
+    const current = this.dateOfBirth();
+    const original = this.original().dateOfBirth;
+  
+    const currentDate = current ? new Date(current) : null;
+    const originalDate = original ? new Date(original) : null;
+  
+    const sameDate = !!currentDate && !!originalDate && currentDate.toDateString() === originalDate.toDateString();
+  
+    const fullNameChanged =
+      ((this.fullName()?.trim().length ?? 0) > 0) &&
+      (this.fullName()?.trim() !== (this.original().fullName ?? '').trim());
+  
+    const genderChanged =
+      (this.gender() ?? '').trim() !== (this.original().gender ?? '').trim();
+  
+    const addressChanged =
+      (this.address() ?? '').trim() !== (this.original().address ?? '').trim();
+  
+    const phoneChanged =
+      (this.phone() ?? '').trim() !== (this.original().phone ?? '').trim();
+  
+    const emailChanged =
+      (this.email() ?? '').trim() !== (this.original().email ?? '').trim();
+  
+    return (
+      fullNameChanged ||
+      !sameDate ||
+      genderChanged ||
+      addressChanged ||
+      phoneChanged ||
+      emailChanged
+    );
 });
-
 
   // Initialize the form signals
   private setupSignalFromInputs(): void {
@@ -88,11 +107,36 @@ export class PatientDetailsComponent {
     });
   }
 
-  public restoreIfEmpty(): void {
-    if (!this.fullName() || this.fullName()?.trim() === '') {
-      this.fullName.set(this.original().fullName);
-    }
+  public restoreFullNameIfEmpty(): void {
+    Helper.restoreIfEmptyField(this.fullName(), v => this.fullName.set(v), this.original().fullName);
   }
+
+  public restoreDateOfBirthIfEmpty(): void {
+    Helper.restoreIfEmptyField(this.dateOfBirth(), v => this.dateOfBirth.set(v), this.original().dateOfBirth);
+  }
+
+  public restoreAddressIfEmpty(): void {
+    Helper.restoreIfEmptyField(this.address(), v => this.address.set(v), this.original().address);
+  }
+
+  public restorePhoneIfEmpty(): void {
+    Helper.restoreIfEmptyField(this.phone(), v => this.phone.set(v), this.original().phone);
+  }
+
+  public restoreEmailIfEmpty(): void {
+    Helper.restoreIfEmptyField(this.email(), v => this.email.set(v), this.original().email);
+  }
+
+  dateOfBirthChanged(value: any) {
+  if (!value) {
+    return;
+  }
+  const parsed = new Date(value);
+    if (!isNaN(parsed.getTime())) {  // invalid
+      this.dateOfBirth.set(parsed); // valid
+    } 
+  }
+
 
   // Delete Patient confirmation
   deletePatient(): void {
@@ -119,7 +163,8 @@ export class PatientDetailsComponent {
       const userId = this.userId()
       if (confirmed && userId) {
         const payload = this.patientPayload();
-        this._adminService.updatePatient(payload).subscribe({
+        const sanatized = {...payload, phone: Helper.PhoneNumber(payload.phone)}
+        this._adminService.updatePatient(sanatized).subscribe({
           next: () => {
             console.log('Patient updated');
             this.original.set({...payload})
