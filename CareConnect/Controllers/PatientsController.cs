@@ -25,7 +25,7 @@ namespace CareConnect.Controllers
             return Ok(result);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatientByID([FromQuery] long patientID)
         {
             var patient = await _patientService.GetPatientByID(patientID);
