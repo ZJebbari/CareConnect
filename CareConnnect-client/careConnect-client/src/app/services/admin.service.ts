@@ -19,4 +19,8 @@ export class AdminService {
   public updatePatient(patientPayload: PatientDto): Observable<any> {
     return this.http.put(`${this.baseUrl}/${patientPayload.userId}`, patientPayload);
   }
+
+  public deletePatient(patientId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${patientId}`);
+  }
 }

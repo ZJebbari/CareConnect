@@ -140,17 +140,32 @@ export class PatientDetailsComponent {
 
   // Delete Patient confirmation
   deletePatient(): void {
-    const modal = {
-      title: 'Delete Patient',
-      bodyText: 'Are you sure you want to delete?',
-      confirmText: 'YES, DELETE',
-      cancelText: 'NO, CANCEL',
-    };
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data:{
+        title: 'Delete Patient',
+        bodyText: `Are you sure you want to delete patient ${this.fullName()}?`,
+        confirmText: 'YES, DELETE',
+        cancel: 'NO, CANCEL'
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed && this.userId()) {
+        this._adminService.deletePatient(this.userId()).subscribe({
+          next: () => {
+            console.log('Patient Deleted');
+          },
+          error: (err) => {
+            console.log("Delete failed", err);
+          }
+        })
+      }
+    })
   }
 
   // Update Patient confirmation
   updatePatient(): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent,{
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
       title: 'Update Patient',
       bodyText: 'Are you sure you want to update?',

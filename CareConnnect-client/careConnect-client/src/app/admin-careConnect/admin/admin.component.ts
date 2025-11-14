@@ -32,6 +32,7 @@ import { CC_UI } from '../../style/care-connect-constants'
   animations: [CC_UI.EXPANSION_PANEL_SLIDE_ANIMATION, CC_UI.CHEVRON_ANIMATION],
 })
 export class AdminComponent {
+
   public readonly patients = computed(
     () => this.dataService.patientData() ?? []
   );
@@ -48,6 +49,7 @@ export class AdminComponent {
 
   private sort = viewChild.required(MatSort);
   private paginator = viewChild.required(MatPaginator);
+  private filterInputSearch = signal<string | null>(null);
 
   public dataSource = signal<MatTableDataSource<PatientResult>>(
     new MatTableDataSource<PatientResult>()
@@ -59,10 +61,16 @@ export class AdminComponent {
   public CC_UI = CC_UI
 
   constructor(private dataService: dataAdminService) {
-    // keep table data in sync with signal
     effect(() => {
-      this.dataSource().data = this.patients();
-    });
+      const filterSearch = this.filterInputSearch();
+      if (filterSearch !== null) {
+        this.dataSource().data = this.patients().filter((patient) => {
+          return patient.fullName.toLowerCase().includes(filterSearch.toLowerCase());
+        })
+      }else {
+        this.dataSource().data = this.patients();
+      }
+    })
   }
 
   ngAfterViewInit(): void {
@@ -79,5 +87,9 @@ export class AdminComponent {
   public onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex)
     this.pageSize.set(event.pageSize)
+  }
+
+  public setSearch(search: string | null) {
+    this.filterInputSearch.set(search);
   }
 }

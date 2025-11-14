@@ -1,14 +1,14 @@
 <div class="action-bar-container">
   <div class="action-bar-title-container">
-    <span>Admin</span>
+    <span>Admin/Patient</span>
   </div>
 
   <div class="action-bar-content">
     <mat-form-field class="action-bar-search" subscriptSizing="dynamic" appearance="outline">
       <mat-label><mat-icon class="action-bar-search-icon">search</mat-icon>&nbsp; Search</mat-label>
-      <input matInput type="text"/>
-      @if (true){
-        <button matSuffix mat-icon-button>
+      <input matInput type="text" [ngModel]="search()" (ngModelChange)="updateSearch($event)"/>
+      @if (displayClear()){
+        <button matSuffix mat-icon-button (click)="clearButton()">
           <mat-icon class="standard-icon">close</mat-icon>
         </button>
       }

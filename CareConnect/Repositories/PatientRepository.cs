@@ -59,7 +59,7 @@ namespace CareConnect.Repositories
         public async Task<string> DeletePatientByUserID(long userID)
         {
             var result = await Connection.QueryAsync<string>(
-                "DeletePatientByUserID",
+                "dbo.usp_Patient_DeleteByUserID",
                 new { UserID = userID },
                 commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction

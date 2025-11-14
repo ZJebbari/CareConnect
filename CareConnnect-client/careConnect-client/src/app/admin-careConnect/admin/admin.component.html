@@ -1,4 +1,4 @@
-<app-navbar></app-navbar>
+<app-navbar (searchOutput)="setSearch($event)"></app-navbar>
   <div class="page-container" cdkScrollable>
     <div class="table-container table-default">
       <table mat-table multiTemplateDataRows [dataSource]="dataSource()" matSort>
