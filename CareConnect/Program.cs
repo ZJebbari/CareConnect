@@ -1,4 +1,5 @@
 ﻿using CareConnect.Common;
+using CareConnect.Hubs;
 using CareConnect.Repositories;
 using CareConnect.Services;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,9 @@ builder.Services.AddScoped<IDbSession>(provider =>
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
+// Add SignalR
+builder.Services.AddSignalR();
+
 // Register controllers and Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,7 +46,8 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins("http://localhost:4200") // Angular dev server
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 // ========================================================================
@@ -66,5 +71,7 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<CareConnectHub>("/careconnectHub");
 
 app.Run();

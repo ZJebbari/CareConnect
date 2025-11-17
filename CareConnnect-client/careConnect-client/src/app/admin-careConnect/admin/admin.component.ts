@@ -1,4 +1,4 @@
-import { Component, computed, effect, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, signal, viewChild, inject } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -13,6 +13,7 @@ import { dataAdminService } from '../../services/data.admin.service';
 import { NavbarComponent } from '../../navbar/navbar.component';
 import { PatientDetailsComponent } from '../patient-details/patient-details.component';
 import { CC_UI } from '../../style/care-connect-constants'
+import { SocketService } from '../../services/socket.service';
 
 @Component({
   selector: 'app-admin',
@@ -32,7 +33,6 @@ import { CC_UI } from '../../style/care-connect-constants'
   animations: [CC_UI.EXPANSION_PANEL_SLIDE_ANIMATION, CC_UI.CHEVRON_ANIMATION],
 })
 export class AdminComponent {
-
   public readonly patients = computed(
     () => this.dataService.patientData() ?? []
   );

@@ -1,12 +1,16 @@
 ﻿
+using CareConnect.Hubs;
 using CareConnect.Models.Database.results;
 using CareConnect.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CareConnect.Services
 {
-    public class PatientService(IPatientRepository _patientRepository) : IPatientService
+    public class PatientService(IPatientRepository _patientRepository, IHubContext<CareConnectHub> _hubContext) : IPatientService
     {
+
         public async Task<IEnumerable<PatientResult>> GetAllPatients()
         {
             return await _patientRepository.GetAllPatients();
@@ -14,7 +18,14 @@ namespace CareConnect.Services
 
         public async Task<string> UpdatePatient(PatientDto patient)
         {
-            return await _patientRepository.UpdatePatient(patient);
+            var result =  await _patientRepository.UpdatePatient(patient);
+
+            if (patient.UserId != 0)
+            {
+                await _hubContext.Clients.All.SendAsync("UpdatePatient", patient.UserId);
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<PatientDto>> GetPatientByID(long patientID)
@@ -24,7 +35,14 @@ namespace CareConnect.Services
 
         public async Task<string> DeletePatientByUserID(long patientID)
         {
-            return await _patientRepository.DeletePatientByUserID(patientID);
+            var result = await _patientRepository.DeletePatientByUserID(patientID);
+
+            if (patientID != 0)
+            {
+                await _hubContext.Clients.All.SendAsync("DeletePatient", patientID);
+            }
+
+            return result;
         }
 
         public async Task<string> CreatePatient([FromForm] PatientDto patient)

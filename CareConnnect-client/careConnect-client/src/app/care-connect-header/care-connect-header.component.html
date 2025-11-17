@@ -10,5 +10,17 @@
   <div class="cc-header-right">
     <mat-icon>account_circle</mat-icon>
     <span class="user-name">Zakaria Jebbari</span>
+    <button mat-button (click)="toggleDarkMode()">
+      @if (isDarkMode()) {
+        <span class="material-symbols-outlined" style="color: #c2c200;">
+          light_mode
+        </span>
+      } @else {
+        <span class="material-symbols-outlined">
+          dark_mode
+        </span>
+      }
+    </button>
   </div>
+
 </header>

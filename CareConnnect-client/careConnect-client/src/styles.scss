@@ -255,7 +255,7 @@ td.standard-expansion-td {
 }
 
 .standard-button {
-  height: 48px !important;
+  height: 56px !important;
   text-transform: uppercase !important;
   font-weight: 500 !important;
   font-size: 15px !important;
@@ -334,6 +334,7 @@ td.standard-expansion-td {
 }
 
 @mixin dark() {
+  /* existing stuff you already have... */
   .action-bar-container {
     background-color: var(--darkGrayBackground);
   }
@@ -357,13 +358,71 @@ td.standard-expansion-td {
   .expansion-panel-section {
     background-color: #303030;
   }
+
+  .action-bar-title-container span {
+    color: var(--white);
+  }
+
+  .standard-button {
+    background-color: #c764ee !important;
+    color: var(--white) !important;
+  }
+
+  /* 🔹 NEW: page background */
+  .page-container {
+    background-color: #121212;
+  }
+
+  /* 🔹 NEW: table container card */
+  .table-container {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+  }
+
+  /* 🔹 NEW: mat-table itself */
+  table.mat-mdc-table {
+    background: transparent; // so the container color shows
+  }
+
+  /* 🔹 NEW: header row */
+  .mat-mdc-header-row {
+    background-color: #242424;
+  }
+
+  .mat-mdc-header-cell {
+    color: #ffffff;
+    border-bottom-color: #333;
+  }
+
+  /* 🔹 NEW: normal rows */
+  .mat-mdc-row {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-bottom-color: #333;
+  }
+
+  /* optional: zebra stripes */
+  .mat-mdc-row:nth-child(even) {
+    background-color: #232323;
+  }
+
+  /* paginator */
+  .mat-mdc-paginator {
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  
+  input {
+    color: #e0e0e0 !important;
+  }
 }
 
-.hl-light-theme {
+
+.light-theme {
   @include light();
 }
 
-.hl-dark-theme {
+.dark-theme {
   @include dark();
 }
 

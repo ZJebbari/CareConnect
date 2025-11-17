@@ -1,7 +1,7 @@
 <app-navbar (searchOutput)="setSearch($event)"></app-navbar>
   <div class="page-container" cdkScrollable>
     <div class="table-container table-default">
-      <table mat-table multiTemplateDataRows [dataSource]="dataSource()" matSort>
+      <table mat-table multiTemplateDataRows [dataSource]="dataSource()" matSort class="lms-clickable">
         <!-- Full Name -->
         <ng-container matColumnDef="fullName">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>

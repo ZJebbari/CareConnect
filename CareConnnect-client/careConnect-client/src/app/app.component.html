@@ -1,4 +1,8 @@
-<app-care-connect-header
-  [userName]="'Zakaria Jebbari'"
-></app-care-connect-header>
-<router-outlet></router-outlet>
+<div [ngClass]="isDarkMode() ? 'dark-theme' : 'light-theme'">
+  <app-care-connect-header (outputModeToggle)="setDarkMode($event)"
+    [userName]="'Zakaria Jebbari'"
+  ></app-care-connect-header>
+  <router-outlet></router-outlet>
+</div>
+
+

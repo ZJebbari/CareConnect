@@ -16,8 +16,8 @@ export class AdminService {
     return this.http.get<PatientResult[]>(this.baseUrl);
   }
 
-  public updatePatient(patientPayload: PatientDto): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${patientPayload.userId}`, patientPayload);
+  public updatePatient(patientPayload: PatientDto): Observable<string> {
+    return this.http.put(`${this.baseUrl}/${patientPayload.userId}`, patientPayload, {responseType: 'text'});
   }
 
   public deletePatient(patientId: number): Observable<any> {
