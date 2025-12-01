@@ -6,7 +6,7 @@ using System.Data;
 
 namespace CareConnect.Repositories
 {
-    public class PatientRepository (CareConnectContext _context, IDbSession _session) : BaseRepository(_session), IPatientRepository
+    public class Repository (CareConnectContext _context, IDbSession _session) : BaseRepository(_session), IRepository
     {
         public async Task<IEnumerable<PatientResult>> GetAllPatients()
         {

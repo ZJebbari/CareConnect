@@ -39,8 +39,8 @@ builder.Services.AddScoped<IDbSession>(provider =>
 // These are injected into controllers using dependency injection
 // They are scoped per request (new instance per HTTP call)
 // ============================================================
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<IService, Service>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();

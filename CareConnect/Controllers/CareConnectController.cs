@@ -1,6 +1,7 @@
 ﻿using CareConnect.Models;
 using CareConnect.Models.Database.results;
 using CareConnect.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,11 @@ namespace CareConnect.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PatientsController(IPatientService _patientService) : ControllerBase
+    public class CareConnectController(IService _patientService) : ControllerBase
     {
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<PatientResult>>> GetAllPatients()
         {
             var patients = await _patientService.GetAllPatients();
@@ -19,6 +21,7 @@ namespace CareConnect.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdatePatient([FromBody] PatientDto patient)
         {
             var result = await _patientService.UpdatePatient(patient);
@@ -33,6 +36,7 @@ namespace CareConnect.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePatientByUserID([FromRoute] long id)
         {
             var message = await _patientService.DeletePatientByUserID(id);

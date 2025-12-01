@@ -1,14 +1,14 @@
 ﻿using CareConnect.Models.Database.results;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CareConnect.Services
+namespace CareConnect.Repositories
 {
-    public interface IPatientService
+    public interface IRepository
     {
         Task<IEnumerable<PatientResult>> GetAllPatients();
+        Task<string> UpdatePatient(PatientDto patient);
         Task<IEnumerable<PatientDto>> GetPatientByID(long patientID);
         Task<string> DeletePatientByUserID(long userID);
-        Task<string> UpdatePatient(PatientDto patient);
         Task<string> CreatePatient(PatientDto patient);
     }
 }
