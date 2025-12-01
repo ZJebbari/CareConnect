@@ -40,3 +40,17 @@ mat-form-field {
   display: flex;
   align-items: center;
 }
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.button-background {
+  background-color: transparent;
+}
+
+.active-btn{
+  color: #007f7c;
+}

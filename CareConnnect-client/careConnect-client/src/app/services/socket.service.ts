@@ -54,17 +54,7 @@ export class SocketService {
     return this.hubConnection.invoke('SendNotification', message);
     // or 'sendNotification' (camelCase) – both usually work
   }
-
-  // You actually don't need this for now since backend already fires UpdatePatient via IHubContext,
-  // but it's okay to keep for future if you want to trigger from client.
-  public notifyPatientUpdate(userId: number) {
-    return this.hubConnection.invoke('UpdatePatient', userId);
-  }
-
-  public notifyPatientDelete(userId: number) {
-    return this.hubConnection.invoke('DeletePatient', userId);
-  }
-
+  
   public clearUpdatedPatient() {
     this.updatedPatient.set(null);
   }

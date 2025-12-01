@@ -2,12 +2,7 @@
 using CareConnect.Models.Database.results;
 using CareConnect.Models.Dtos;
 using Dapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Transactions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CareConnect.Repositories
 {

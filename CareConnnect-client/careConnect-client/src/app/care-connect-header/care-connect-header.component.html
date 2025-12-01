@@ -8,19 +8,21 @@
   </div>
 
   <div class="cc-header-right">
-    <mat-icon>account_circle</mat-icon>
-    <span class="user-name">Zakaria Jebbari</span>
+    @if (user()) {
+      <mat-icon>account_circle</mat-icon>
+      <span class="user-name">{{ user()?.fullName }}</span>
+      <button mat-button class="logout-btn" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
+    }
+
     <button mat-button (click)="toggleDarkMode()">
       @if (isDarkMode()) {
-        <span class="material-symbols-outlined" style="color: #c2c200;">
-          light_mode
-        </span>
+        <span class="material-symbols-outlined" style="color: #c2c200;">light_mode</span>
       } @else {
-        <span class="material-symbols-outlined">
-          dark_mode
-        </span>
+        <span class="material-symbols-outlined">dark_mode</span>
       }
     </button>
-  </div>
 
+  </div>
 </header>

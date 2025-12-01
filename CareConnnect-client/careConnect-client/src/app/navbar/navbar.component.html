@@ -1,6 +1,20 @@
 <div class="action-bar-container">
   <div class="action-bar-title-container">
-    <span>Admin/Patient</span>
+    <span>Admin/{{ isBtnActive | titlecase }}</span>
+  </div>
+
+  <div class="flex">
+    <button mat-flat-button class="standard-button button-background" (click)="btnPatient()">
+      <span [class.active-btn]="isBtnActive === 'patients'">Patients</span>
+    </button>
+
+    <button mat-flat-button class="standard-button button-background" (click)="btnPersonnel()">
+      <span [class.active-btn]="isBtnActive === 'personnel'">Personnel</span>
+    </button>
+
+    <button mat-flat-button class="standard-button button-background" (click)="btnDoctors()">
+      <span [class.active-btn]="isBtnActive === 'doctors'">Doctors</span>
+    </button>
   </div>
 
   <div class="action-bar-content">

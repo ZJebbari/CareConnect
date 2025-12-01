@@ -34,3 +34,24 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   height: 48px;
 }
+
+.logout-btn {
+  color: white;
+  min-width: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+
+  .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:active {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+}
+

@@ -2,18 +2,21 @@
 using CareConnect.Hubs;
 using CareConnect.Repositories;
 using CareConnect.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Load configuration from appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-// Register EF Core DbContext
+// ===================== DB & SESSIONS =====================
+
 builder.Services.AddDbContext<CareConnectContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register your custom session (IDbSession -> DbSession)
 builder.Services.AddScoped<IDbSession>(provider =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -23,20 +26,46 @@ builder.Services.AddScoped<IDbSession>(provider =>
     return new DbSession(connectionString);
 });
 
-// Register repositories and services
+// ===================== REPOS & SERVICES =====================
+
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
-// Add SignalR
-builder.Services.AddSignalR();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
-// Register controllers and Swagger
+// ===================== JWT AUTH =====================
+
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var keyBytes = Encoding.UTF8.GetBytes(jwtSection["Key"]!);
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidAudience = jwtSection["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ===================== SIGNALR / MVC / SWAGGER =====================
+
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ===================== CORS =====================
 
-// ========================= 🧩 CORS CONFIGURATION =========================
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
@@ -44,19 +73,19 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200") // Angular dev server
+            .WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
 });
-// ========================================================================
 
+// ===================== BUILD APP =====================
 
-// Build the app
 var app = builder.Build();
 
-// Configure middleware
+// ===================== MIDDLEWARE PIPELINE =====================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -65,13 +94,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ✅ Enable CORS (must be before authorization and MapControllers)
 app.UseCors(MyAllowSpecificOrigins);
 
+// 🔐 IMPORTANT: auth before authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.MapHub<CareConnectHub>("/careconnectHub");
 
 app.Run();
