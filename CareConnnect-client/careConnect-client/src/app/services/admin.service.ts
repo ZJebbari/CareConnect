@@ -8,7 +8,7 @@ import { PatientDto } from '../models/patientDto';
   providedIn: 'root',
 })
 export class AdminService {
-  private baseUrl = '/api/Patients';
+  private baseUrl = '/api/CareConnect/admin/patients';
 
   constructor(private http: HttpClient) {}
 

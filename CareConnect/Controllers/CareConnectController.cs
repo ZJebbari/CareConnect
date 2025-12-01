@@ -12,8 +12,8 @@ namespace CareConnect.Controllers
     public class CareConnectController(IService _patientService) : ControllerBase
     {
 
-        [HttpGet]
-        [Authorize(Roles = "admin")]
+        [HttpGet("admin/patients")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<PatientResult>>> GetAllPatients()
         {
             var patients = await _patientService.GetAllPatients();

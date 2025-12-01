@@ -12,12 +12,12 @@ export class dataPatientService {
   });
 
   constructor(private api: PatientService) {
-    effect(() => {
-      this.fetchPatients();
-    });
+    // effect(() => {
+    //   this.fetchPatients();
+    // });
   }
 
-  fetchPatients() {
-    this.api.getAllPatients().subscribe((data) => this.patients.set(data));
-  }
+  // fetchPatients() {
+  //   this.api.getAllPatients().subscribe((data) => this.patients.set(data));
+  // }
 }

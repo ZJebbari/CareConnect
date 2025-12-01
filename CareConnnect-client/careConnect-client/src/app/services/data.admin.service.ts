@@ -2,6 +2,7 @@ import { computed, effect, Injectable, signal, inject } from '@angular/core';
 import { PatientResult } from '../models/patientResult';
 import { PatientService } from './patient.service';
 import { SocketService } from './socket.service';
+import { AdminService } from './admin.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class dataAdminService {
 
   private socket = inject(SocketService);
 
-  constructor(private api: PatientService) {
+  constructor(private api: AdminService) {
     effect(() => {
       this.fetchPatients();
     });

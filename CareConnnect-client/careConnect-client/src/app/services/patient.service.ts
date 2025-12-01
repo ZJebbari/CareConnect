@@ -7,11 +7,11 @@ import { PatientResult } from '../models/patientResult';
   providedIn: 'root',
 })
 export class PatientService {
-  private baseUrl = '/api/Patients';
+  // private baseUrl = '/api/Patients';
 
   constructor(private http: HttpClient) {}
 
-  getAllPatients(): Observable<PatientResult[]> {
-    return this.http.get<PatientResult[]>(this.baseUrl);
-  }
+  // getAllPatients(): Observable<PatientResult[]> {
+  //   return this.http.get<PatientResult[]>(this.baseUrl);
+  // }
 }
