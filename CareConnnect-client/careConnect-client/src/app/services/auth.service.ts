@@ -24,7 +24,7 @@ const ROLE_KEY = 'cc_role';
 const NAME_KEY = 'cc_fullName';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', // singleton across entire app
 })
 export class AuthService {
   private baseUrl = 'https://localhost:7079/api/Auth';
@@ -35,7 +35,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // ---- LOGIN ----
-  login(payload: LoginRequest): Observable<LoginResponse> {
+  public login(payload: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, payload).pipe(
       tap((res) => {
         this.saveAuth(res);
@@ -44,7 +44,7 @@ export class AuthService {
   }
 
   // ---- LOGOUT ----
-  logout(): void {
+  public logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(ROLE_KEY);
     localStorage.removeItem(NAME_KEY);
@@ -52,19 +52,19 @@ export class AuthService {
   }
 
   // ---- HELPERS ----
-  getToken(): string | null {
+  public getToken(): string | null {
     return this.currentUser()?.token ?? null;
   }
 
-  getRole(): string | null {
+  public getRole(): string | null {
     return this.currentUser()?.role ?? null;
   }
 
-  isLoggedIn(): boolean {
+  public isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
-  isAdmin(): boolean {
+  public isAdmin(): boolean {
     return this.getRole()?.toLowerCase() === 'admin';
   }
 

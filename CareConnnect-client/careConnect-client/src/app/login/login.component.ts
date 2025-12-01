@@ -35,7 +35,7 @@ export class LoginComponent {
 
   submit() {
     if (this.form.invalid) return;
-
+    
     this.loading = true;
     this.errorMessage = null;
 

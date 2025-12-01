@@ -28,6 +28,7 @@ $careconnect-theme: mat.m2-define-light-theme(
   --lightGrayBackground: #ededed;
   --darkGrayBackground: #29292a;
   --lightPrimary: #0073c8;
+  --yellowPrimary: #c2c200;
 
   --page-side-margin: 10px;
   --action-bar-height: 64px;
@@ -300,6 +301,14 @@ td.standard-expansion-td {
 
 .mat-calendar {
   background-color: #f1f1f1 !important;  // YOUR COLOR HERE
+}
+
+.white-text {
+  color: var(--white) !important;
+}
+
+.yellow-symbol {
+  color: var(--yellowPrimary) !important;
 }
 
 // Light / Dark Mode Theming

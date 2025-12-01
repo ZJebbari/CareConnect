@@ -12,16 +12,14 @@
       <mat-icon>account_circle</mat-icon>
       <span class="user-name">{{ user()?.fullName }}</span>
       <button mat-button class="logout-btn" (click)="logout()">
-        <span class="material-symbols-outlined">logout</span>
+        <span class="material-symbols-outlined white-text">logout</span>
       </button>
     }
 
     <button mat-button (click)="toggleDarkMode()">
-      @if (isDarkMode()) {
-        <span class="material-symbols-outlined" style="color: #c2c200;">light_mode</span>
-      } @else {
-        <span class="material-symbols-outlined">dark_mode</span>
-      }
+      <span class="material-symbols-outlined" [ngClass]="isDarkMode() ? 'yellow-symbol' : 'white-text'">
+        {{ isDarkMode() ? 'light_mode' : 'dark_mode' }}
+      </span>
     </button>
 
   </div>
