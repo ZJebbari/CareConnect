@@ -49,5 +49,10 @@ namespace CareConnect.Services
         {
             return await _repository.CreatePatient(patient);
         }
+
+        public async Task<IEnumerable<PhysicianResult>> GetAllPhysicians()
+        {
+            return await _repository.GetAllPhysicians();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using CareConnect.Models.Database.results;
 using CareConnect.Models.Dtos;
 using Dapper;
+using Microsoft.AspNetCore.Mvc;
 using System.Data;
 
 namespace CareConnect.Repositories
@@ -81,6 +82,16 @@ namespace CareConnect.Repositories
                 );
 
             return result.Message;
+        }
+
+        public async Task<IEnumerable<PhysicianResult>> GetAllPhysicians()
+        {
+            var result = await Connection.QueryAsync<PhysicianResult>(
+                "usp_Physician_GetAll",
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+                );
+            return result;
         }
 
     }
