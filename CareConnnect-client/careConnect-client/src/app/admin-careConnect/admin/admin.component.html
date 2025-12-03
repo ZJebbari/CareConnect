@@ -1,4 +1,4 @@
 <app-navbar (searchOutput)="setSearch($event)" (currentToggle)="toggleCurrent($event)"></app-navbar>
 <app-table-patients *ngIf="currentToggle() === 'patients'" [filterInputSearch]="filterInputSearch()"></app-table-patients>
-<app-table-doctors *ngIf="currentToggle() === 'doctors'"></app-table-doctors>
+<app-table-doctors *ngIf="currentToggle() === 'doctors'" [filterInputSearch]="filterInputSearch()"></app-table-doctors>
 <app-table-personnel *ngIf="currentToggle() === 'personnel'"></app-table-personnel>

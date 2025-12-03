@@ -23,7 +23,6 @@ export class dataAdminService {
 
   constructor(private api: AdminService) {
     effect(() => {
-      debugger;
       this.fetchPatients();
       this.fetchPhysicians();
     });
