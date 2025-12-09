@@ -4,6 +4,7 @@ import { PatientService } from './patient.service';
 import { SocketService } from './socket.service';
 import { AdminService } from './admin.service';
 import { PhysicianResult } from '../models/physicianResult';
+import { SpecialtyResult } from '../models/specialtyResult';
 
 @Injectable({
   providedIn: 'root',
@@ -19,13 +20,15 @@ export class dataAdminService {
     return this.physicians();
   });
 
+  private specialties = signal<SpecialtyResult[]>([]);
+  public specialtyData = computed(() => this.specialties());
+
   private socket = inject(SocketService);
 
   constructor(private api: AdminService) {
-    effect(() => {
       this.fetchPatients();
       this.fetchPhysicians();
-    });
+      this.fetchSpecialties();
 
      effect(() => {
       const userId = this.socket.updatedPatient();
@@ -44,6 +47,10 @@ export class dataAdminService {
 
   private fetchPhysicians() {
     this.api.getAllPhysicians().subscribe((data) => this.physicians.set(data));
+  }
+
+  private fetchSpecialties() {
+  this.api.getAllSpecialty().subscribe(data => this.specialties.set(data));
   }
 
 }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { PatientResult } from '../models/patientResult';
 import { PatientDto } from '../models/patientDto';
 import { PhysicianResult } from '../models/physicianResult';
+import { SpecialtyResult } from '../models/specialtyResult';
 
 @Injectable({
   providedIn: 'root',
@@ -27,5 +28,9 @@ export class AdminService {
 
   public getAllPhysicians(): Observable<PhysicianResult[]> {
     return this.http.get<PhysicianResult[]>(`${this.baseUrl}/physicians`)
+  }
+
+  public getAllSpecialty(): Observable<SpecialtyResult[]> {
+    return this.http.get<SpecialtyResult[]>(`${this.baseUrl}/specialty`)
   }
 }

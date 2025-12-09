@@ -94,5 +94,14 @@ namespace CareConnect.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<SpecialtyResult>> GetAllSpecialty()
+        {
+            var result = await Connection.QueryAsync<SpecialtyResult>(
+                "dbo.usp_Specialty_GetAll",
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+                );
+            return result;
+        }
     }
 }

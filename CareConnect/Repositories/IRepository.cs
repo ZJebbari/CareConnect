@@ -14,5 +14,6 @@ namespace CareConnect.Repositories
 
         // Physicians
         Task<IEnumerable<PhysicianResult>> GetAllPhysicians();
+        Task<IEnumerable<SpecialtyResult>> GetAllSpecialty();
     }
 }

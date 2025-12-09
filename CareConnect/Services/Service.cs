@@ -54,5 +54,10 @@ namespace CareConnect.Services
         {
             return await _repository.GetAllPhysicians();
         }
+
+        public async Task<IEnumerable<SpecialtyResult>> GetAllSpecialty()
+        {
+            return await _repository.GetAllSpecialty();
+        }
     }
 }

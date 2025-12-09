@@ -10,6 +10,7 @@ import { PhysicianResult } from '../../models/physicianResult';
 import { PatientResult } from '../../models/patientResult';
 import { CC_UI } from '../../style/care-connect-constants';
 import { filter } from 'rxjs';
+import { PhysicianDetailsComponent } from "../physician-details/physician-details.component";
 
 @Component({
   selector: 'app-table-doctors',
@@ -20,7 +21,8 @@ import { filter } from 'rxjs';
     MatSortModule,
     MatIconModule,
     CdkScrollable,
-  ],
+    PhysicianDetailsComponent
+],
   templateUrl: './table-doctors.component.html',
   styleUrl: './table-doctors.component.scss',
   animations: [CC_UI.EXPANSION_PANEL_SLIDE_ANIMATION, CC_UI.CHEVRON_ANIMATION],

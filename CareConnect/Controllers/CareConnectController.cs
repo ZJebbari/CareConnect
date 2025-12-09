@@ -61,6 +61,18 @@ namespace CareConnect.Controllers
             return Ok(result);
         }
 
+        [HttpGet("Admin/Specialty")]
+        public async Task<ActionResult<IEnumerable<SpecialtyResult>>> GetAllSpecialty()
+        {
+            var result = await _service.GetAllSpecialty();
+
+            if (result == null)
+            {
+                return NotFound("No specialty found.");
+            }
+            return Ok(result);
+        }
+
 
     }
 }

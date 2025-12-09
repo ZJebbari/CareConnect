@@ -1,0 +1,52 @@
+<div class="expansion-panel-container">
+  <div class="expansion-panel-section mat-elevation-z3">
+    <div class="expansion-panel-content-container">
+      <div class="expansion-panel-content">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name</mat-label>
+          <input matInput name="fullName" type="text" #fullNameModel="ngModel" [ngModel]="fullName()" (ngModelChange)="this.fullName.set($event)" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Specialty</mat-label>
+          <mat-select
+            name="specialty"
+            #specialtyModel="ngModel"
+            [ngModel]="specialty()"
+            (ngModelChange)="this.specialty.set($event)">
+            <mat-option *ngFor="let s of this.specialties()" [value]="s.specialty">
+              {{ s.specialty }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput name="email" type="email" #emailModel="ngModel" [ngModel]="email()" (ngModelChange)="this.email.set($event)" />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput name="phone" type="text" #phoneModel="ngModel" [ngModel]="phone()" (ngModelChange)="this.phone.set($event)" />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Availability</mat-label>
+          <mat-select matInput name="availability" #availabilityModel="ngModel" [ngModel]="availability()" (ngModelChange)="this.availability.set($event)">
+            <mat-option [value]="false">Full</mat-option>
+            <mat-option [value]="true">Available</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      <div class="expansion-panel-content">
+        <button mat-flat-button color="warn" class="standard-button" (click)="deletePhysician()">
+          Delete Physician
+        </button>
+        <button mat-flat-button color="primary" class="standard-button" (click)="updatePhysician()" [disabled]="!isDirty()">
+          Update Physician
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -15,5 +15,6 @@ namespace CareConnect.Services
 
         // Physicians
         Task<IEnumerable<PhysicianResult>> GetAllPhysicians();
+        Task<IEnumerable<SpecialtyResult>> GetAllSpecialty();
     }
 }

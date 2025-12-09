@@ -48,6 +48,14 @@
             class="standard-expansion-td">
             @if (element === expandedPhysician) {
               <div [@expansionPanelSlide]>
+                <app-physician-details
+                [userId]="element.userId"
+                [fullName]="element.fullName"
+                [specialty]="element.specialty"
+                [email]="element.email"
+                [phone]="element.phone"
+                [availability]="element.availability">
+                </app-physician-details>
             </div>
             }
           </td>
