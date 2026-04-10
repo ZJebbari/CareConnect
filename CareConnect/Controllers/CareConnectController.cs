@@ -37,7 +37,7 @@ namespace CareConnect.Controllers
             return Ok(patient);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Admin/Patients/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePatientByUserID([FromRoute] long id)
         {
@@ -93,15 +93,23 @@ namespace CareConnect.Controllers
 
         [HttpGet("Admin/Personnels")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<PatientResult>>> GetAllPersonnels()
+        public async Task<ActionResult<IEnumerable<PersonnelResult>>> GetAllPersonnels()
         {
             var personnels = await _service.GetAllPersonnels();
             return Ok(personnels);
         }
 
+        [HttpPost("Admin/Personnels")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> CreatePersonnel([FromBody] PersonnelDto personnel)
+        {
+            var result = await _service.CreatePersonnel(personnel);
+            return Ok(result);
+        }
+
         [HttpPut("Admin/Personnels/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdatePersonnel([FromBody] PatientDto personnel)
+        public async Task<ActionResult> UpdatePersonnel([FromBody] PersonnelDto personnel)
         {
             var result = await _service.UpdatePersonnel(personnel);
             return Ok(result);
@@ -109,7 +117,7 @@ namespace CareConnect.Controllers
 
         [HttpGet("Admin/Personnels/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<PatientDto>>> GetPersonnelByID([FromQuery] long personnelID)
+        public async Task<ActionResult<IEnumerable<PersonnelDto>>> GetPersonnelByID([FromQuery] long personnelID)
         {
             var personnel = await _service.GetPersonnelByID(personnelID);
             return Ok(personnel);

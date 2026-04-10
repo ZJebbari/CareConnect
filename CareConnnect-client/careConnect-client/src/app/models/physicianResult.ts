@@ -3,7 +3,8 @@ export interface PhysicianResult {
   userId: number;
   roleId: number;
   availability: boolean;
-  specialty:string
+  specialtyID: number;
+  specialty: string;
   bio: string;
   fullName: string;
   email: string;

@@ -13,6 +13,7 @@ import { dataAdminService } from '../../services/data.admin.service';
 import { CommonModule } from '@angular/common';
 import { ConfirmationDialogComponent } from '../../reusables/confirmation-dialog/confirmation-dialog.component';
 import { AdminService } from '../../services/admin.service';
+import { Helper } from '../../helper/helper';
 
 @Component({
   selector: 'app-physician-details',
@@ -51,8 +52,10 @@ export class PhysicianDetailsComponent {
     userId: this.userId() ?? 0,
     fullName: (this.fullName() ?? '').trim(),
     specialty: (this.specialty() ?? '').trim(),
+    specialtyID: this.resolveSpecialtyId((this.specialty() ?? '').trim()),
     phone: (this.phone() ?? '').trim(),
     email: (this.email() ?? '').trim(),
+    password: null,
     availability: this.availability(),
     bio: (this.bio() ?? '').trim(),
   }));
@@ -146,16 +149,26 @@ export class PhysicianDetailsComponent {
       const userId = this.userId();
       if (confirmed && userId) {
         const payload = this.physicianPayload();
-        this._adminService.updatePhysician(payload).subscribe({
+        const sanitized = { ...payload, phone: Helper.PhoneNumber(payload.phone) };
+
+        this._adminService.updatePhysician(sanitized).subscribe({
           next: () => {
             console.log('Physician updated');
             this.original.set({ ...payload });
           },
           error: (err) => {
-            console.log("Update failed", err);
+            console.log('Update failed', err);
           }
         });
       }
     });
+  }
+
+  private resolveSpecialtyId(specialty: string): number | null {
+    const match = this.specialties().find(
+      (s) => s.specialty.toLowerCase() === specialty.toLowerCase()
+    );
+
+    return match?.specialtyID ?? null;
   }
 }

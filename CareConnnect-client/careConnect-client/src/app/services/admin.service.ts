@@ -6,6 +6,8 @@ import { PatientDto } from '../models/patientDto';
 import { PhysicianResult } from '../models/physicianResult';
 import { PhysicianDto } from '../models/physicianDto';
 import { SpecialtyResult } from '../models/specialtyResult';
+import { PersonnelResult } from '../models/personnelResult';
+import { PersonnelDto } from '../models/personnelDto';
 
 @Injectable({
   providedIn: 'root',
@@ -43,11 +45,15 @@ export class AdminService {
     return this.http.get<SpecialtyResult[]>(`${this.baseUrl}/specialty`)
   }
 
-  public getAllPersonnels(): Observable<PatientResult[]> {
-    return this.http.get<PatientResult[]>(`${this.baseUrl}/personnels`);
+  public getAllPersonnels(): Observable<PersonnelResult[]> {
+    return this.http.get<PersonnelResult[]>(`${this.baseUrl}/personnels`);
   }
 
-  public updatePersonnel(personnelPayload: PatientDto): Observable<string> {
+  public createPersonnel(personnelPayload: PersonnelDto): Observable<string> {
+    return this.http.post(`${this.baseUrl}/personnels`, personnelPayload, { responseType: 'text' });
+  }
+
+  public updatePersonnel(personnelPayload: PersonnelDto): Observable<string> {
     return this.http.put(`${this.baseUrl}/personnels/${personnelPayload.userId}`, personnelPayload, {responseType: 'text'});
   }
 

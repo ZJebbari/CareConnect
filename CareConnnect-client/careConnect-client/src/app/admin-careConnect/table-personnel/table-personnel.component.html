@@ -1,50 +1,86 @@
-<div class="table-container">
-  <table
-    mat-table
-    [dataSource]="dataSource()"
-    matSort
-    class="mat-elevation-z3"
-    [class.table-expanded]="false">
+<div class="page-container" cdkScrollable>
+  <div class="table-container table-default">
+    <div style="margin: 8px 0 16px 0;">
+      <button mat-flat-button color="primary" (click)="toggleCreateForm()">
+        {{ showCreateForm() ? 'Hide Create Personnel' : 'Create Personnel' }}
+      </button>
+    </div>
 
-    <!-- Full Name Column -->
-    <ng-container matColumnDef="fullName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
-      <td mat-cell *matCellDef="let element">{{ element.fullName }}</td>
-    </ng-container>
+    @if (showCreateForm()) {
+      <app-personnel-details [isCreateMode]="true"></app-personnel-details>
+    }
 
-    <!-- Email Column -->
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-      <td mat-cell *matCellDef="let element">{{ element.email }}</td>
-    </ng-container>
+    <table mat-table multiTemplateDataRows [dataSource]="dataSource()" matSort class="lms-clickable">
+      <ng-container matColumnDef="fullName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
+        <td mat-cell *matCellDef="let element">{{ element.fullName }}</td>
+      </ng-container>
 
-    <!-- Phone Column -->
-    <ng-container matColumnDef="phone">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
-      <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
-    </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+      </ng-container>
 
-    <!-- Role Column -->
-    <ng-container matColumnDef="role">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
-      <td mat-cell *matCellDef="let element">{{ element.role }}</td>
-    </ng-container>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+        <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
+      </ng-container>
 
-    <!-- Created At Column -->
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
-      <td mat-cell *matCellDef="let element">{{ element.createdAt | date:'short' }}</td>
-    </ng-container>
+      <ng-container matColumnDef="roleID">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+        <td mat-cell *matCellDef="let element">{{ roleLabel(element.roleID) }}</td>
+      </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+        <td mat-cell *matCellDef="let element">{{ element.createdAt | date:'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="chevron">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+          <mat-icon [@chevron]="((element == expandedPersonnel)) ? 'expanded' : 'collapsed'">keyboard_arrow_down</mat-icon>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expandedDetail">
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [attr.colspan]="displayedColumns.length"
+          class="standard-expansion-td">
+          @if (element === expandedPersonnel) {
+            <div [@expansionPanelSlide]>
+              <app-personnel-details
+                [userId]="element.userId"
+                [roleIDInput]="element.roleID"
+                [fullNameInput]="element.fullName"
+                [emailInput]="element.email"
+                [phoneInput]="element.phone">
+              </app-personnel-details>
+            </div>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr
+        mat-row
+        *matRowDef="let element; columns: displayedColumns"
+        (click)="expandClick(element)"
+        class="clickable table-row"
+        [class.table-row-expanded]="expandedPersonnel === element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail'];" class="table-expansion-row"></tr>
+    </table>
+  </div>
 
   <mat-paginator
+    showFirstLastButtons
+    [pageSizeOptions]="[CC_UI.DEFAULT_PAGINATION_OPTION]"
     [length]="personnel().length"
-    [pageSize]="pageSize()"
-    [pageSizeOptions]="CC_UI.PAGINATOR_OPTIONS"
-    (page)="onPageChange($event)"
-    showFirstLastButtons>
+    [pageSize]="this.pageSize()"
+    [pageIndex]="this.pageIndex()"
+    (page)="onPageChange($event)">
   </mat-paginator>
 </div>

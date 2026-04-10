@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,13 +18,22 @@ import { MatNativeDateModule } from '@angular/material/core';
   styleUrl: './patient-details.component.scss',
 })
 export class PatientDetailsComponent {
-  public userId = model<number>(0);
-  public fullName = model<string | null>(null);
-  public dateOfBirth = model<Date>(new Date());
-  public gender = model<string | null>(null);
-  public address = model<string | null>(null);
-  public phone = model<string | null>(null);
-  public email = model<string | null>(null);
+  // Input properties from parent
+  public userId = input<number>(0);
+  public fullNameInput = input<string | null>(null);
+  public dateOfBirthInput = input<Date | null>(null);
+  public genderInput = input<string | null>(null);
+  public addressInput = input<string | null>(null);
+  public phoneInput = input<string | null>(null);
+  public emailInput = input<string | null>(null);
+
+  // Form state signals
+  public fullName = signal<string>('');
+  public dateOfBirth = signal<Date>(new Date());
+  public gender = signal<string>('');
+  public address = signal<string>('');
+  public phone = signal<string>('');
+  public email = signal<string>('');
 
 
   private original = signal({
@@ -37,7 +46,7 @@ export class PatientDetailsComponent {
   });
 
   public patientPayload = computed(() => ({
-    userId: this.userId() ?? '',
+    userId: this.userId() ?? 0,
     fullName: (this.fullName() ?? '').trim(),
     dateOfBirth: this.dateOfBirth(),
     gender: (this.gender() ?? '').trim(),
@@ -49,14 +58,35 @@ export class PatientDetailsComponent {
   private _subscription = new Subscription();
   private dialog = inject(MatDialog);
 
-  constructor(private _adminService: AdminService){}
+  constructor(private _adminService: AdminService){
+    // Initialize form signals from inputs and set original values
+    effect(() => {
+      const userId = this.userId();
+      const fullNameInput = this.fullNameInput();
+      const dateOfBirthInput = this.dateOfBirthInput();
+      const genderInput = this.genderInput();
+      const addressInput = this.addressInput();
+      const phoneInput = this.phoneInput();
+      const emailInput = this.emailInput();
 
-  ngOnInit(): void {
-    this.setupSignalFromInputs();
-  }
+      if (userId && fullNameInput) {
+        this.fullName.set(fullNameInput);
+        this.dateOfBirth.set(dateOfBirthInput || new Date());
+        this.gender.set(genderInput || '');
+        this.address.set(addressInput || '');
+        this.phone.set(phoneInput || '');
+        this.email.set(emailInput || '');
 
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
+        this.original.set({
+          fullName: fullNameInput,
+          dateOfBirth: dateOfBirthInput || new Date(),
+          gender: genderInput || '',
+          address: addressInput || '',
+          phone: phoneInput || '',
+          email: emailInput || '',
+        });
+      }
+    });
   }
 
   // Detect unsaved changes
@@ -94,18 +124,6 @@ export class PatientDetailsComponent {
       emailChanged
     );
 });
-
-  // Initialize the form signals
-  private setupSignalFromInputs(): void {
-    this.original.set({
-      fullName: this.fullName() ?? '',
-      dateOfBirth: this.dateOfBirth(),
-      gender: this.gender() ?? '',
-      address: this.address() ?? '',
-      phone: this.phone() ?? '',
-      email: this.email() ?? '',
-    });
-  }
 
   public restoreFullNameIfEmpty(): void {
     Helper.restoreIfEmptyField(this.fullName(), v => this.fullName.set(v), this.original().fullName);

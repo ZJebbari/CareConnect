@@ -20,9 +20,10 @@ namespace CareConnect.Repositories
         Task<IEnumerable<SpecialtyResult>> GetAllSpecialty();
 
         // Personnels
-        Task<IEnumerable<PatientResult>> GetAllPersonnels();
-        Task<string> UpdatePersonnel(PatientDto personnel);
-        Task<IEnumerable<PatientDto>> GetPersonnelByID(long personnelID);
+        Task<IEnumerable<PersonnelResult>> GetAllPersonnels();
+        Task<string> CreatePersonnel(PersonnelDto personnel);
+        Task<string> UpdatePersonnel(PersonnelDto personnel);
+        Task<IEnumerable<PersonnelDto>> GetPersonnelByID(long personnelID);
         Task<string> DeletePersonnelByUserID(long userID);
     }
 }

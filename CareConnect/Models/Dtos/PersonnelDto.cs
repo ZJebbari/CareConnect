@@ -1,16 +1,11 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 [Keyless]
-public class PhysicianDto
+public class PersonnelDto
 {
     public int UserId { get; set; }
 
     public string FullName { get; set; }
-
-    public string Specialty { get; set; }
-
-    public int? SpecialtyID { get; set; }
 
     public string Email { get; set; }
 
@@ -18,7 +13,5 @@ public class PhysicianDto
 
     public string Phone { get; set; }
 
-    public bool Availability { get; set; }
-
-    public string Bio { get; set; }
+    public int RoleID { get; set; } = 4;
 }

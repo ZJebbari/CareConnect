@@ -1,10 +1,10 @@
 import { computed, effect, Injectable, signal, inject } from '@angular/core';
 import { PatientResult } from '../models/patientResult';
-import { PatientService } from './patient.service';
 import { SocketService } from './socket.service';
 import { AdminService } from './admin.service';
 import { PhysicianResult } from '../models/physicianResult';
 import { SpecialtyResult } from '../models/specialtyResult';
+import { PersonnelResult } from '../models/personnelResult';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +23,7 @@ export class dataAdminService {
   private specialties = signal<SpecialtyResult[]>([]);
   public specialtyData = computed(() => this.specialties());
 
-  private personnel = signal<PatientResult[]>([]);
+  private personnel = signal<PersonnelResult[]>([]);
   public personnelData = computed(() => this.personnel());
 
   private socket = inject(SocketService);
@@ -39,9 +39,19 @@ export class dataAdminService {
       const deletedUserId = this.socket.deletedPatient();
       const physicianUserId = this.socket.updatedPhysician();
       const deletedPhysicianUserId = this.socket.deletedPhysician();
+      const createdPersonnel = this.socket.createdPersonnel();
       const personnelUserId = this.socket.updatedPersonnel();
       const deletedPersonnelUserId = this.socket.deletedPersonnel();
-      if (userId !== 0 || deletedUserId !== 0 || physicianUserId !== 0 || deletedPhysicianUserId !== 0 || personnelUserId !== 0 || deletedPersonnelUserId !== 0) {
+
+      if (
+        userId !== null ||
+        deletedUserId !== null ||
+        physicianUserId !== null ||
+        deletedPhysicianUserId !== null ||
+        createdPersonnel ||
+        personnelUserId !== null ||
+        deletedPersonnelUserId !== null
+      ) {
         this.fetchPatients();
         this.fetchPhysicians();
         this.fetchPersonnel();
@@ -49,6 +59,7 @@ export class dataAdminService {
         this.socket.clearDeletedPatient();
         this.socket.clearUpdatedPhysician();
         this.socket.clearDeletedPhysician();
+        this.socket.clearCreatedPersonnel();
         this.socket.clearUpdatedPersonnel();
         this.socket.clearDeletedPersonnel();
       }

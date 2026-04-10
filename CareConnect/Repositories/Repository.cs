@@ -96,25 +96,55 @@ namespace CareConnect.Repositories
 
         public async Task<string> UpdatePhysician(PhysicianDto physician)
         {
-            var parameters = new
-            {
-                UserId = physician.UserId,
-                FullName = physician.FullName,
-                Specialty = physician.Specialty,
-                Email = physician.Email,
-                Phone = physician.Phone,
-                Availability = physician.Availability,
-                Bio = physician.Bio
-            };
+            var specialtyId = physician.SpecialtyID;
 
-            var result = await Connection.ExecuteAsync(
+            if (!specialtyId.HasValue && !string.IsNullOrWhiteSpace(physician.Specialty))
+            {
+                var specialties = await Connection.QueryAsync<SpecialtyResult>(
+                    "dbo.usp_Specialty_GetAll",
+                    commandType: CommandType.StoredProcedure,
+                    transaction: _session.Transaction
+                );
+
+                specialtyId = specialties
+                    .FirstOrDefault(s => string.Equals(s.Specialty, physician.Specialty, StringComparison.OrdinalIgnoreCase))
+                    ?.SpecialtyID;
+            }
+
+            if (!specialtyId.HasValue)
+            {
+                return "Specialty is required for physician update.";
+            }
+
+            var currentPassword = await Connection.QuerySingleOrDefaultAsync<string>(
+                "SELECT Password FROM dbo.Users WHERE UserID = @UserID",
+                new { physician.UserId },
+                transaction: _session.Transaction
+            );
+
+            if (string.IsNullOrWhiteSpace(currentPassword) && string.IsNullOrWhiteSpace(physician.Password))
+            {
+                return "Unable to resolve physician password for update.";
+            }
+
+            var result = await Connection.QuerySingleAsync<string>(
                 "usp_Physician_Update",
-                parameters,
+                new
+                {
+                    UserID = physician.UserId,
+                    FullName = physician.FullName,
+                    Email = physician.Email,
+                    Password = physician.Password ?? currentPassword,
+                    Phone = physician.Phone,
+                    Availability = physician.Availability,
+                    Bio = physician.Bio,
+                    SpecialtyID = specialtyId.Value
+                },
                 commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction
             );
 
-            return result > 0 ? "Physician updated successfully" : "Failed to update physician";
+            return result;
         }
 
         public async Task<string> DeletePhysicianByUserID(long userID)
@@ -141,9 +171,9 @@ namespace CareConnect.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<PatientResult>> GetAllPersonnels()
+        public async Task<IEnumerable<PersonnelResult>> GetAllPersonnels()
         {
-            var result = await Connection.QueryAsync<PatientResult>(
+            var result = await Connection.QueryAsync<PersonnelResult>(
                 "usp_Personnel_GetAll",
                 commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction
@@ -152,8 +182,38 @@ namespace CareConnect.Repositories
             return result;
         }
 
-        public async Task<string> UpdatePersonnel(PatientDto personnel)
+        public async Task<string> CreatePersonnel(PersonnelDto personnel)
         {
+            var result = await Connection.QuerySingleAsync<string>(
+                "usp_Personnel_Add",
+                new
+                {
+                    FullName = personnel.FullName,
+                    Email = personnel.Email,
+                    Password = personnel.Password,
+                    Phone = personnel.Phone,
+                    RoleID = personnel.RoleID
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
+        public async Task<string> UpdatePersonnel(PersonnelDto personnel)
+        {
+            var currentPassword = await Connection.QuerySingleOrDefaultAsync<string>(
+                "SELECT Password FROM dbo.Users WHERE UserID = @UserID",
+                new { personnel.UserId },
+                transaction: _session.Transaction
+            );
+
+            if (string.IsNullOrWhiteSpace(currentPassword) && string.IsNullOrWhiteSpace(personnel.Password))
+            {
+                return "Unable to resolve personnel password for update.";
+            }
+
             var result = await Connection.QuerySingleAsync<string>(
                 "usp_Personnel_Update",
                 new
@@ -161,11 +221,8 @@ namespace CareConnect.Repositories
                     UserID = personnel.UserId,
                     FullName = personnel.FullName,
                     Email = personnel.Email,
-                    Phone = personnel.Phone,
-                    DateOfBirth = personnel.DateOfBirth,
-                    Address = personnel.Address,
-                    Gender = personnel.Gender
-
+                    Password = personnel.Password ?? currentPassword,
+                    Phone = personnel.Phone
                 },
                  commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction
@@ -173,9 +230,9 @@ namespace CareConnect.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<PatientDto>> GetPersonnelByID(long personnelID)
+        public async Task<IEnumerable<PersonnelDto>> GetPersonnelByID(long personnelID)
         {
-            var result = await Connection.QueryAsync<PatientDto>(
+            var result = await Connection.QueryAsync<PersonnelDto>(
                 "usp_Personnel_GetByID",
                 new { PersonnelID = personnelID },
                 commandType: CommandType.StoredProcedure,

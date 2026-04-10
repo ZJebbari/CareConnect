@@ -33,6 +33,11 @@ namespace CareConnect.Hubs
             await Clients.All.SendAsync("DeletePhysician", UserId);
         }
 
+        public async Task CreatePersonnel()
+        {
+            await Clients.All.SendAsync("CreatePersonnel");
+        }
+
         public async Task UpdatePersonnel(long userID)
         {
             // Broadcast to all clients that personnel was updated

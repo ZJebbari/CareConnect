@@ -84,12 +84,21 @@ namespace CareConnect.Services
             return await _repository.GetAllSpecialty();
         }
 
-        public async Task<IEnumerable<PatientResult>> GetAllPersonnels()
+        public async Task<IEnumerable<PersonnelResult>> GetAllPersonnels()
         {
             return await _repository.GetAllPersonnels();
         }
 
-        public async Task<string> UpdatePersonnel(PatientDto personnel)
+        public async Task<string> CreatePersonnel(PersonnelDto personnel)
+        {
+            var result = await _repository.CreatePersonnel(personnel);
+
+            await _hubContext.Clients.All.SendAsync("CreatePersonnel");
+
+            return result;
+        }
+
+        public async Task<string> UpdatePersonnel(PersonnelDto personnel)
         {
             var result = await _repository.UpdatePersonnel(personnel);
 
@@ -101,7 +110,7 @@ namespace CareConnect.Services
             return result;
         }
 
-        public async Task<IEnumerable<PatientDto>> GetPersonnelByID(long personnelID)
+        public async Task<IEnumerable<PersonnelDto>> GetPersonnelByID(long personnelID)
         {
             return await _repository.GetPersonnelByID(personnelID);
         }
