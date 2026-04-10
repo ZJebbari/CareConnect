@@ -46,12 +46,14 @@ namespace CareConnect.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<string> CreatePatient(PatientDto patient)
         {
             return await _service.CreatePatient(patient);
         }
 
         [HttpGet("Admin/Physicians")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<PhysicianResult>>> GetAllPhysicians()
         {
             var result =  await _service.GetAllPhysicians();

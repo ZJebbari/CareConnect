@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { AuthService } from './auth.service';
 import * as signalR from '@microsoft/signalr';
 
 @Injectable({
@@ -16,6 +17,8 @@ export class SocketService {
   public updatedPersonnel = signal<number | null>(null);
   public deletedPersonnel = signal<number | null>(null);
 
+  private auth = inject(AuthService);
+
   constructor() {
     this.startConnection();
     this.registerEvents();
@@ -23,7 +26,10 @@ export class SocketService {
 
   private startConnection() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7079/careconnectHub')
+      .withUrl('https://localhost:7079/careconnectHub', {
+        withCredentials: false,
+        accessTokenFactory: () => this.auth.getToken() ?? ''  // Pass JWT token
+      } as signalR.IHttpConnectionOptions)
       .withAutomaticReconnect()
       .build();
 

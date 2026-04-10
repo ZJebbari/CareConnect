@@ -68,6 +68,17 @@ export class AuthService {
     return this.getRole()?.toLowerCase() === 'admin';
   }
 
+  public isPersonnel(): boolean {
+    return this.getRole()?.toLowerCase() === 'personnel';
+  }
+
+  public isPatient(): boolean {
+    return this.getRole()?.toLowerCase() === 'patient';
+  }
+
+  public isPhysician(): boolean {
+    return this.getRole()?.toLowerCase() === 'physician';
+  }
   // ---- PRIVATE ----
   private saveAuth(res: LoginResponse): void {
     localStorage.setItem(TOKEN_KEY, res.token);

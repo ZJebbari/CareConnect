@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CareConnect.Hubs
 {
+    [Authorize]
     public class CareConnectHub : Hub
     {
         // Client -> Server: can be called from Angular

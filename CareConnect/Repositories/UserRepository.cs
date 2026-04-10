@@ -7,20 +7,48 @@ namespace CareConnect.Repositories
 {
     public class UserRepository(CareConnectContext _context, IDbSession _session): BaseRepository(_session), IUserRepository
     {
-        public async Task<UserLoginResult?> LoginAsync(string email, string password)
+        /// <summary>
+        /// Retrieves user by email including password hash for authentication.
+        /// Password verification (BCrypt comparison) happens in C#, not SQL.
+        /// </summary>
+        public async Task<UserAuthResult?> GetUserByEmailAsync(string email)
         {
-            var result = await Connection.QuerySingleOrDefaultAsync<UserLoginResult>(
-                "usp_User_Login",
-                new
-                {
-                    Email = email,
-                    Password = password   // later -> hash
-                },
-                commandType: CommandType.StoredProcedure,
+            var result = await Connection.QuerySingleOrDefaultAsync<UserAuthResult>(
+                @"
+                    SELECT 
+                        u.UserID as UserId,
+                        u.FullName,
+                        u.Email,
+                        u.Phone,
+                        u.RoleID as RoleId,
+                        r.Name as RoleName,
+                        u.Password as PasswordHash
+                    FROM dbo.Users u
+                    INNER JOIN dbo.Roles r ON r.RoleID = u.RoleID
+                    WHERE u.Email = @Email
+                ",
+                new { Email = email },
+                commandType: CommandType.Text,
                 transaction: _session.Transaction
             );
 
             return result;
+        }
+
+        /// <summary>
+        /// Converts UserAuthResult to UserLoginResult, removing sensitive password data.
+        /// </summary>
+        public UserLoginResult ToLoginResult(UserAuthResult authResult)
+        {
+            return new UserLoginResult
+            {
+                UserId = authResult.UserId,
+                FullName = authResult.FullName,
+                Email = authResult.Email,
+                Phone = authResult.Phone,
+                RoleId = authResult.RoleId,
+                RoleName = authResult.RoleName
+            };
         }
     }
 }
