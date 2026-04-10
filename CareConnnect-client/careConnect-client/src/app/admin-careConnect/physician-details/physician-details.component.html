@@ -31,11 +31,8 @@
         </mat-form-field>
         
         <mat-form-field appearance="outline">
-          <mat-label>Availability</mat-label>
-          <mat-select matInput name="availability" #availabilityModel="ngModel" [ngModel]="availability()" (ngModelChange)="this.availability.set($event)">
-            <mat-option [value]="false">Full</mat-option>
-            <mat-option [value]="true">Available</mat-option>
-          </mat-select>
+          <mat-label>Bio</mat-label>
+          <textarea matInput name="bio" #bioModel="ngModel" [ngModel]="bio()" (ngModelChange)="this.bio.set($event)" rows="3"></textarea>
         </mat-form-field>
       </div>
       

@@ -11,6 +11,8 @@ export class SocketService {
   public notification = signal<string | null>(null);
   public updatedPatient = signal<number | null>(null);
   public deletedPatient = signal<number | null>(null);
+  public updatedPhysician = signal<number | null>(null);
+  public deletedPhysician = signal<number | null>(null);
 
   constructor() {
     this.startConnection();
@@ -45,7 +47,15 @@ export class SocketService {
     this.hubConnection.on('DeletePatient', (userID: number) => {
       this.deletedPatient.set(userID);
     })
-  }
+    // ✅ Must match Clients.All.SendAsync("UpdatePhysician", ...)
+    this.hubConnection.on('UpdatePhysician', (userId: number) => {
+      this.updatedPhysician.set(userId);
+    });
+
+    // ✅ Must match Clients.All.SendAsync("DeletePhysician", ...)
+    this.hubConnection.on('DeletePhysician', (userID: number) => {
+      this.deletedPhysician.set(userID);
+    });  }
 
   // Client -> Server Calls
 
@@ -61,6 +71,14 @@ export class SocketService {
 
   public clearDeletedPatient() {
     this.deletedPatient.set(null);
+  }
+
+  public clearUpdatedPhysician() {
+    this.updatedPhysician.set(null);
+  }
+
+  public clearDeletedPhysician() {
+    this.deletedPhysician.set(null);
   }
 
   public clearNotification() {
