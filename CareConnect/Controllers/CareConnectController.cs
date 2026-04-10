@@ -20,7 +20,7 @@ namespace CareConnect.Controllers
             return Ok(patients);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("Admin/Patients/{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdatePatient([FromBody] PatientDto patient)
         {
@@ -28,7 +28,8 @@ namespace CareConnect.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("Admin/Patients/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatientByID([FromQuery] long patientID)
         {
             var patient = await _service.GetPatientByID(patientID);
