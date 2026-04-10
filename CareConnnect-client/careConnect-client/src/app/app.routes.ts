@@ -4,6 +4,7 @@ import { PatientsComponent } from './patients/patients.component';
 import { AdminComponent } from './admin-careConnect/admin/admin.component';
 import { LoginComponent } from './login/login.component';
 import { adminGuard } from './guards/admin.guard';
+import { personnelGuard } from './guards/personnel.guard';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,7 @@ export const routes: Routes = [
   {
     path: 'home',
     component: AppointmentComponent,
+    canActivate: [personnelGuard],
   },
   {
     path: 'patients',

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Primitives;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +72,22 @@ builder.Services
             ValidIssuer = jwtSection["Issuer"],             // Your issuer from config
             ValidAudience = jwtSection["Audience"],         // Intended token audience
             IssuerSigningKey = new SymmetricSecurityKey(keyBytes) // Secret used to sign token
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                StringValues accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/careconnectHub"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 

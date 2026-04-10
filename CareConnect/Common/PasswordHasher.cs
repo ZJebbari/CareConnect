@@ -7,6 +7,11 @@ namespace CareConnect.Common
     /// </summary>
     public static class PasswordHasher
     {
+        public static bool IsBcryptHash(string value)
+        {
+            return !string.IsNullOrWhiteSpace(value) && (value.StartsWith("$2a$") || value.StartsWith("$2b$") || value.StartsWith("$2y$"));
+        }
+
         /// <summary>
         /// Hashes a plain text password using BCrypt with cost factor 11.
         /// </summary>
@@ -36,6 +41,13 @@ namespace CareConnect.Common
                 // If verification fails (e.g., invalid hash format), return false
                 return false;
             }
+        }
+
+        public static bool VerifyLegacyPlainText(string plainPassword, string storedValue)
+        {
+            return !string.IsNullOrWhiteSpace(storedValue)
+                && !IsBcryptHash(storedValue)
+                && string.Equals(plainPassword, storedValue, StringComparison.Ordinal);
         }
     }
 }

@@ -50,5 +50,15 @@ namespace CareConnect.Repositories
                 RoleName = authResult.RoleName
             };
         }
+
+        public async Task UpdatePasswordHashAsync(int userId, string passwordHash)
+        {
+            await Connection.ExecuteAsync(
+                @"UPDATE dbo.Users SET Password = @PasswordHash WHERE UserID = @UserID",
+                new { UserID = userId, PasswordHash = passwordHash },
+                commandType: CommandType.Text,
+                transaction: _session.Transaction
+            );
+        }
     }
 }

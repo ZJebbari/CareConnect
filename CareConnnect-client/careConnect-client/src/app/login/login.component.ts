@@ -35,14 +35,32 @@ export class LoginComponent {
 
   submit() {
     if (this.form.invalid) return;
-    
+
     this.loading = true;
     this.errorMessage = null;
 
     this.auth.login(this.form.value as any).subscribe({
-      next: () => {
+      next: (response) => {
         this.loading = false;
-        this.router.navigate(['admin']);
+
+        const role = response.role?.toLowerCase();
+
+        if (role === 'admin') {
+          this.router.navigate(['admin']);
+          return;
+        }
+
+        if (role === 'personnel') {
+          this.router.navigate(['home']);
+          return;
+        }
+
+        if (role === 'patient') {
+          this.router.navigate(['patients']);
+          return;
+        }
+
+        this.router.navigate(['home']);
       },
       error: (err) => {
         this.loading = false;

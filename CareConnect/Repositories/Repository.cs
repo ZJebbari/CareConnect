@@ -127,6 +127,12 @@ namespace CareConnect.Repositories
                 return "Unable to resolve physician password for update.";
             }
 
+            var resolvedPassword = !string.IsNullOrWhiteSpace(physician.Password)
+                ? PasswordHasher.HashPassword(physician.Password)
+                : PasswordHasher.IsBcryptHash(currentPassword ?? string.Empty)
+                    ? currentPassword!
+                    : PasswordHasher.HashPassword(currentPassword!);
+
             var result = await Connection.QuerySingleAsync<string>(
                 "usp_Physician_Update",
                 new
@@ -134,7 +140,7 @@ namespace CareConnect.Repositories
                     UserID = physician.UserId,
                     FullName = physician.FullName,
                     Email = physician.Email,
-                    Password = physician.Password ?? currentPassword,
+                    Password = resolvedPassword,
                     Phone = physician.Phone,
                     Availability = physician.Availability,
                     Bio = physician.Bio,
@@ -184,13 +190,15 @@ namespace CareConnect.Repositories
 
         public async Task<string> CreatePersonnel(PersonnelDto personnel)
         {
+            var hashedPassword = PasswordHasher.HashPassword(personnel.Password ?? string.Empty);
+
             var result = await Connection.QuerySingleAsync<string>(
                 "usp_Personnel_Add",
                 new
                 {
                     FullName = personnel.FullName,
                     Email = personnel.Email,
-                    Password = personnel.Password,
+                    Password = hashedPassword,
                     Phone = personnel.Phone,
                     RoleID = personnel.RoleID
                 },
@@ -214,6 +222,12 @@ namespace CareConnect.Repositories
                 return "Unable to resolve personnel password for update.";
             }
 
+            var resolvedPassword = !string.IsNullOrWhiteSpace(personnel.Password)
+                ? PasswordHasher.HashPassword(personnel.Password)
+                : PasswordHasher.IsBcryptHash(currentPassword ?? string.Empty)
+                    ? currentPassword!
+                    : PasswordHasher.HashPassword(currentPassword!);
+
             var result = await Connection.QuerySingleAsync<string>(
                 "usp_Personnel_Update",
                 new
@@ -221,7 +235,7 @@ namespace CareConnect.Repositories
                     UserID = personnel.UserId,
                     FullName = personnel.FullName,
                     Email = personnel.Email,
-                    Password = personnel.Password ?? currentPassword,
+                    Password = resolvedPassword,
                     Phone = personnel.Phone
                 },
                  commandType: CommandType.StoredProcedure,

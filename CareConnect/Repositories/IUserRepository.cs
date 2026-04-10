@@ -16,6 +16,8 @@ namespace CareConnect.Repositories
         /// Converts UserAuthResult to UserLoginResult (removes sensitive password data).
         /// </summary>
         UserLoginResult ToLoginResult(UserAuthResult authResult);
+
+        Task UpdatePasswordHashAsync(int userId, string passwordHash);
     }
 }
 

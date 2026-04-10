@@ -15,17 +15,31 @@ namespace CareConnect.Services
         /// <returns>UserLoginResult if credentials valid, null otherwise</returns>
         public async Task<UserLoginResult?> ValidateUserAsync(string email, string password)
         {
-            // Fetch user by email with password hash
             var authResult = await _userRepository.GetUserByEmailAsync(email);
 
             if (authResult == null)
+            {
                 return null;
+            }
 
-            // Verify plain text password against BCrypt hash
-            if (!PasswordHasher.VerifyPassword(password, authResult.PasswordHash))
+            if (PasswordHasher.IsBcryptHash(authResult.PasswordHash))
+            {
+                if (!PasswordHasher.VerifyPassword(password, authResult.PasswordHash))
+                {
+                    return null;
+                }
+
+                return _userRepository.ToLoginResult(authResult);
+            }
+
+            if (!PasswordHasher.VerifyLegacyPlainText(password, authResult.PasswordHash))
+            {
                 return null;
+            }
 
-            // Convert to login result (removes password from return value)
+            var upgradedHash = PasswordHasher.HashPassword(password);
+            await _userRepository.UpdatePasswordHashAsync(authResult.UserId, upgradedHash);
+
             return _userRepository.ToLoginResult(authResult);
         }
     }
