@@ -94,6 +94,43 @@ namespace CareConnect.Repositories
             return result;
         }
 
+        public async Task<string> UpdatePhysician(PhysicianDto physician)
+        {
+            var parameters = new
+            {
+                UserId = physician.UserId,
+                FullName = physician.FullName,
+                Specialty = physician.Specialty,
+                Email = physician.Email,
+                Phone = physician.Phone,
+                Availability = physician.Availability,
+                Bio = physician.Bio
+            };
+
+            var result = await Connection.ExecuteAsync(
+                "usp_Physician_Update",
+                parameters,
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result > 0 ? "Physician updated successfully" : "Failed to update physician";
+        }
+
+        public async Task<string> DeletePhysicianByUserID(long userID)
+        {
+            var parameters = new { UserId = userID };
+
+            var result = await Connection.ExecuteAsync(
+                "usp_Physician_DeleteByUserID",
+                parameters,
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result > 0 ? "Physician deleted successfully" : "Failed to delete physician";
+        }
+
         public async Task<IEnumerable<SpecialtyResult>> GetAllSpecialty()
         {
             var result = await Connection.QueryAsync<SpecialtyResult>(

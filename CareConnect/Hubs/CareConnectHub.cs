@@ -21,5 +21,16 @@ namespace CareConnect.Hubs
         {
             await Clients.All.SendAsync("DeletePatient", UserId);
         }
+
+        public async Task UpdatePhysician(long userID)
+        {
+            // Broadcast to all clients that physician was updated
+            await Clients.All.SendAsync("UpdatePhysician", userID);
+        }
+
+        public async Task DeletePhysician(long UserId)
+        {
+            await Clients.All.SendAsync("DeletePhysician", UserId);
+        }
     }
 }

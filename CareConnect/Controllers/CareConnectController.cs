@@ -1,5 +1,6 @@
 ﻿using CareConnect.Models;
 using CareConnect.Models.Database.results;
+using CareConnect.Models.Dtos;
 using CareConnect.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,22 @@ namespace CareConnect.Controllers
                 return NotFound("No physician found.");
             }
             return Ok(result);
+        }
+
+        [HttpPut("Admin/Physicians/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> UpdatePhysician([FromBody] PhysicianDto physician)
+        {
+            var result = await _service.UpdatePhysician(physician);
+            return Ok(result);
+        }
+
+        [HttpDelete("Admin/Physicians/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeletePhysicianByUserID([FromRoute] long id)
+        {
+            var message = await _service.DeletePhysicianByUserID(id);
+            return Ok(new { Message = message });
         }
 
         [HttpGet("Admin/Specialty")]

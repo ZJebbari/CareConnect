@@ -55,6 +55,16 @@ namespace CareConnect.Services
             return await _repository.GetAllPhysicians();
         }
 
+        public async Task<string> UpdatePhysician(PhysicianDto physician)
+        {
+            return await _repository.UpdatePhysician(physician);
+        }
+
+        public async Task<string> DeletePhysicianByUserID(long userID)
+        {
+            return await _repository.DeletePhysicianByUserID(userID);
+        }
+
         public async Task<IEnumerable<SpecialtyResult>> GetAllSpecialty()
         {
             return await _repository.GetAllSpecialty();

@@ -1,4 +1,5 @@
 ﻿using CareConnect.Models.Database.results;
+using CareConnect.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareConnect.Services
@@ -15,6 +16,8 @@ namespace CareConnect.Services
 
         // Physicians
         Task<IEnumerable<PhysicianResult>> GetAllPhysicians();
+        Task<string> UpdatePhysician(PhysicianDto physician);
+        Task<string> DeletePhysicianByUserID(long userID);
         Task<IEnumerable<SpecialtyResult>> GetAllSpecialty();
     }
 }
