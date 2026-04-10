@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, model, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -21,13 +21,22 @@ import { AdminService } from '../../services/admin.service';
   styleUrl: './physician-details.component.scss'
 })
 export class PhysicianDetailsComponent {
-  public userId = model<number>(0);
-  public fullName = model<string | null>(null);
-  public specialty = model<string | null>(null);
-  public email = model<string | null>(null);
-  public phone = model<string | null>(null);
-  public availability = model<boolean>(false);
-  public bio = model<string | null>(null);
+  // Input properties from parent
+  public userId = input<number>(0);
+  public fullNameInput = input<string | null>(null);
+  public specialtyInput = input<string | null>(null);
+  public emailInput = input<string | null>(null);
+  public phoneInput = input<string | null>(null);
+  public availabilityInput = input<boolean>(false);
+  public bioInput = input<string | null>(null);
+
+  // Form state signals
+  public fullName = signal<string>('');
+  public specialty = signal<string>('');
+  public email = signal<string>('');
+  public phone = signal<string>('');
+  public availability = signal<boolean>(false);
+  public bio = signal<string>('');
 
   private original = signal({
     fullName: '',
@@ -53,47 +62,34 @@ export class PhysicianDetailsComponent {
   private _subscription = new Subscription();
   private dialog = inject(MatDialog);
   
-  constructor(private dataService: dataAdminService, private _adminService: AdminService){}
+  constructor(private dataService: dataAdminService, private _adminService: AdminService){
+    // Initialize form signals from inputs and set original values
+    effect(() => {
+      const userId = this.userId();
+      const fullNameInput = this.fullNameInput();
+      const specialtyInput = this.specialtyInput();
+      const emailInput = this.emailInput();
+      const phoneInput = this.phoneInput();
+      const availabilityInput = this.availabilityInput();
+      const bioInput = this.bioInput();
 
-  ngOnInit(): void {
-    this.setupSignalFromInputs();
-  }
+      if (userId && fullNameInput) {
+        this.fullName.set(fullNameInput);
+        this.specialty.set(specialtyInput || '');
+        this.email.set(emailInput || '');
+        this.phone.set(phoneInput || '');
+        this.availability.set(availabilityInput);
+        this.bio.set(bioInput || '');
 
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
-  }
-
-  // Watch for input changes and update original values
-  private inputWatcher = effect(() => {
-    const userId = this.userId();
-    const fullName = this.fullName();
-    const specialty = this.specialty();
-    const email = this.email();
-    const phone = this.phone();
-    const availability = this.availability();
-    const bio = this.bio();
-
-    if (userId && fullName) {
-      this.original.set({
-        fullName: fullName,
-        specialty: specialty || '',
-        phone: phone || '',
-        email: email || '',
-        availability: availability,
-        bio: bio || '',
-      });
-    }
-  });
-
-  // Initialize the form signals
-  private setupSignalFromInputs(): void {
-    this.original.set({
-      fullName: this.fullName() ?? '',
-      specialty: this.specialty() ?? '',
-      phone: this.phone() ?? '',
-      email: this.email() ?? '',
-      availability: this.availability(),
-      bio: this.bio() ?? '',
+        this.original.set({
+          fullName: fullNameInput,
+          specialty: specialtyInput || '',
+          phone: phoneInput || '',
+          email: emailInput || '',
+          availability: availabilityInput,
+          bio: bioInput || '',
+        });
+      }
     });
   }
 

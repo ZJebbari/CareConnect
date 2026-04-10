@@ -1,7 +1,7 @@
 export interface PhysicianResult {
-  physicianID: number;
-  userID: number;
-  roleID: number;
+  physicianId: number;
+  userId: number;
+  roleId: number;
   availability: boolean;
   specialty:string
   bio: string;

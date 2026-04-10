@@ -49,13 +49,13 @@
             @if (element === expandedPhysician) {
               <div [@expansionPanelSlide]>
                 <app-physician-details
-                [userId]="element.userID"
-                [fullName]="element.fullName"
-                [specialty]="element.specialty"
-                [email]="element.email"
-                [phone]="element.phone"
-                [availability]="element.availability"
-                [bio]="element.bio">
+                [userId]="element.userId"
+                [fullNameInput]="element.fullName"
+                [specialtyInput]="element.specialty"
+                [emailInput]="element.email"
+                [phoneInput]="element.phone"
+                [availabilityInput]="element.availability"
+                [bioInput]="element.bio">
                 </app-physician-details>
             </div>
             }
