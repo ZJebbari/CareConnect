@@ -1,5 +1,6 @@
 <div class="login-container">
   <h1>CareConnect Login</h1>
+  <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
 
   <form [formGroup]="form" (ngSubmit)="submit()">
     <mat-form-field appearance="outline" class="full-width">
@@ -25,5 +26,7 @@
     <p *ngIf="errorMessage" class="error">
       {{ errorMessage }}
     </p>
+
+    <a class="reset-link" routerLink="/set-password">Set / Reset Password</a>
   </form>
 </div>

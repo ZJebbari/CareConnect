@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,7 @@ import { AuthService } from '../services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    RouterLink,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

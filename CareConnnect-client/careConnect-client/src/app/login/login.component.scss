@@ -11,6 +11,12 @@
     margin-bottom: 16px;
   }
 
+  .success {
+    margin: 0 0 12px;
+    color: #2e7d32;
+    font-weight: 500;
+  }
+
   .full-width {
     width: 100%;
     margin-bottom: 16px;
@@ -19,5 +25,10 @@
   .error {
     color: #c62828;
     margin-top: 8px;
+  }
+
+  .reset-link {
+    display: inline-block;
+    margin-top: 12px;
   }
 }

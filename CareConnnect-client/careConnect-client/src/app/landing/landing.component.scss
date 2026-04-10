@@ -1,0 +1,47 @@
+.landing-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.hero-card {
+  max-width: 760px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #d9dee8;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  padding: 28px;
+}
+
+.brand {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #2e5b96;
+}
+
+h1 {
+  margin: 8px 0 12px;
+}
+
+.description {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.actions {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.note {
+  margin-top: 14px;
+  font-size: 0.92rem;
+  color: #5f6b7a;
+}

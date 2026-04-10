@@ -65,9 +65,9 @@ namespace CareConnect.Services
             }
 
             var role = user.RoleName?.Trim().ToLowerInvariant();
-            if (role != "personnel" && role != "support")
+            if (role != "admin" && role != "personnel" && role != "support")
             {
-                return (false, "Password setup/reset is only available for personnel accounts.");
+                return (false, "Password setup/reset is only available for admin and personnel accounts.");
             }
 
             if (string.Equals(request.CurrentPassword, request.NewPassword, StringComparison.Ordinal))
