@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { TableDoctorsComponent } from './table-doctors.component';
 
@@ -8,7 +9,7 @@ describe('TableDoctorsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableDoctorsComponent]
+      imports: [HttpClientTestingModule, TableDoctorsComponent]
     })
     .compileComponents();
 

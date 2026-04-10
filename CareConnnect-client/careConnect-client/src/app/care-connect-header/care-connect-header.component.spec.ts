@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { CareConnectHeaderComponent } from './care-connect-header.component';
 
@@ -8,7 +9,7 @@ describe('CareConnectHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CareConnectHeaderComponent]
+      imports: [HttpClientTestingModule, CareConnectHeaderComponent]
     })
     .compileComponents();
 
