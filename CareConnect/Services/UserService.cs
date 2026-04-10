@@ -1,5 +1,6 @@
 ﻿using CareConnect.Common;
 using CareConnect.Models.Database.results;
+using CareConnect.Models.Dtos;
 using CareConnect.Repositories;
 
 namespace CareConnect.Services
@@ -41,6 +42,43 @@ namespace CareConnect.Services
             await _userRepository.UpdatePasswordHashAsync(authResult.UserId, upgradedHash);
 
             return _userRepository.ToLoginResult(authResult);
+        }
+
+        public async Task<(bool Success, string Message)> SetPasswordAsync(SetPasswordDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email)
+                || string.IsNullOrWhiteSpace(request.CurrentPassword)
+                || string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return (false, "Email, current password, and new password are required.");
+            }
+
+            if (request.NewPassword.Length < 8)
+            {
+                return (false, "New password must be at least 8 characters.");
+            }
+
+            var user = await ValidateUserAsync(request.Email, request.CurrentPassword);
+            if (user == null)
+            {
+                return (false, "Current credentials are invalid.");
+            }
+
+            var role = user.RoleName?.Trim().ToLowerInvariant();
+            if (role != "personnel" && role != "support")
+            {
+                return (false, "Password setup/reset is only available for personnel accounts.");
+            }
+
+            if (string.Equals(request.CurrentPassword, request.NewPassword, StringComparison.Ordinal))
+            {
+                return (false, "New password must be different from current password.");
+            }
+
+            var newHash = PasswordHasher.HashPassword(request.NewPassword);
+            await _userRepository.UpdatePasswordHashAsync(user.UserId, newHash);
+
+            return (true, "Password updated successfully.");
         }
     }
 }

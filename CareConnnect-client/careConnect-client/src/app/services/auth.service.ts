@@ -13,6 +13,16 @@ export interface LoginResponse {
   fullName: string;
 }
 
+export interface SetPasswordRequest {
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ApiMessageResponse {
+  message: string;
+}
+
 export interface AuthUser {
   fullName: string;
   role: string;
@@ -41,6 +51,10 @@ export class AuthService {
         this.saveAuth(res);
       })
     );
+  }
+
+  public setPassword(payload: SetPasswordRequest): Observable<ApiMessageResponse> {
+    return this.http.post<ApiMessageResponse>(`${this.baseUrl}/set-password`, payload);
   }
 
   // ---- LOGOUT ----

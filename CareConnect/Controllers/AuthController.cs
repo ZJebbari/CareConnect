@@ -45,5 +45,18 @@ namespace CareConnect.Controllers
                 fullName = user.FullName
             });
         }
+
+        [HttpPost("set-password")]
+        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto request)
+        {
+            var (success, message) = await _userService.SetPasswordAsync(request);
+
+            if (!success)
+            {
+                return BadRequest(new { message });
+            }
+
+            return Ok(new { message });
+        }
     }
 }
