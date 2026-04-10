@@ -69,5 +69,39 @@ namespace CareConnect.Services
         {
             return await _repository.GetAllSpecialty();
         }
+
+        public async Task<IEnumerable<PatientResult>> GetAllPersonnels()
+        {
+            return await _repository.GetAllPersonnels();
+        }
+
+        public async Task<string> UpdatePersonnel(PatientDto personnel)
+        {
+            var result = await _repository.UpdatePersonnel(personnel);
+
+            if (personnel.UserId != 0)
+            {
+                await _hubContext.Clients.All.SendAsync("UpdatePersonnel", personnel.UserId);
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<PatientDto>> GetPersonnelByID(long personnelID)
+        {
+            return await _repository.GetPersonnelByID(personnelID);
+        }
+
+        public async Task<string> DeletePersonnelByUserID(long userID)
+        {
+            var result = await _repository.DeletePersonnelByUserID(userID);
+
+            if (userID != 0)
+            {
+                await _hubContext.Clients.All.SendAsync("DeletePersonnel", userID);
+            }
+
+            return result;
+        }
     }
 }

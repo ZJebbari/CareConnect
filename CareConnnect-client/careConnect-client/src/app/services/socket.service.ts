@@ -13,6 +13,8 @@ export class SocketService {
   public deletedPatient = signal<number | null>(null);
   public updatedPhysician = signal<number | null>(null);
   public deletedPhysician = signal<number | null>(null);
+  public updatedPersonnel = signal<number | null>(null);
+  public deletedPersonnel = signal<number | null>(null);
 
   constructor() {
     this.startConnection();
@@ -55,6 +57,16 @@ export class SocketService {
     // ✅ Must match Clients.All.SendAsync("DeletePhysician", ...)
     this.hubConnection.on('DeletePhysician', (userID: number) => {
       this.deletedPhysician.set(userID);
+    });
+
+    // ✅ Must match Clients.All.SendAsync("UpdatePersonnel", ...)
+    this.hubConnection.on('UpdatePersonnel', (userId: number) => {
+      this.updatedPersonnel.set(userId);
+    });
+
+    // ✅ Must match Clients.All.SendAsync("DeletePersonnel", ...)
+    this.hubConnection.on('DeletePersonnel', (userID: number) => {
+      this.deletedPersonnel.set(userID);
     });  }
 
   // Client -> Server Calls
@@ -79,6 +91,14 @@ export class SocketService {
 
   public clearDeletedPhysician() {
     this.deletedPhysician.set(null);
+  }
+
+  public clearUpdatedPersonnel() {
+    this.updatedPersonnel.set(null);
+  }
+
+  public clearDeletedPersonnel() {
+    this.deletedPersonnel.set(null);
   }
 
   public clearNotification() {

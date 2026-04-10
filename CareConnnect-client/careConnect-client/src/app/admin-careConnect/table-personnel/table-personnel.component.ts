@@ -6,7 +6,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { CdkScrollable } from '@angular/cdk/scrolling';
-import { PersonnelResult } from '../../models/personnelResult';
+import { PatientResult } from '../../models/patientResult';
 import { CC_UI } from '../../style/care-connect-constants';
 
 @Component({
@@ -38,8 +38,8 @@ export class TablePersonnelComponent {
   private sort = viewChild.required(MatSort);
   private paginator = viewChild.required(MatPaginator);
 
-  public dataSource = signal<MatTableDataSource<PersonnelResult>>(
-    new MatTableDataSource<PersonnelResult>()
+  public dataSource = signal<MatTableDataSource<PatientResult>>(
+    new MatTableDataSource<PatientResult>()
   );
 
   public pageSize = signal<number>(CC_UI.DEFAULT_PAGINATION_OPTION);

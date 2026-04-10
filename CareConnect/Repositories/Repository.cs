@@ -140,5 +140,60 @@ namespace CareConnect.Repositories
                 );
             return result;
         }
+
+        public async Task<IEnumerable<PatientResult>> GetAllPersonnels()
+        {
+            var result = await Connection.QueryAsync<PatientResult>(
+                "usp_Personnel_GetAll",
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
+        public async Task<string> UpdatePersonnel(PatientDto personnel)
+        {
+            var result = await Connection.QuerySingleAsync<string>(
+                "usp_Personnel_Update",
+                new
+                {
+                    UserID = personnel.UserId,
+                    FullName = personnel.FullName,
+                    Email = personnel.Email,
+                    Phone = personnel.Phone,
+                    DateOfBirth = personnel.DateOfBirth,
+                    Address = personnel.Address,
+                    Gender = personnel.Gender
+
+                },
+                 commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+                );
+            return result;
+        }
+
+        public async Task<IEnumerable<PatientDto>> GetPersonnelByID(long personnelID)
+        {
+            var result = await Connection.QueryAsync<PatientDto>(
+                "usp_Personnel_GetByID",
+                new { PersonnelID = personnelID },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+                );
+            return result;
+        }
+
+        public async Task<string> DeletePersonnelByUserID(long userID)
+        {
+            var result = await Connection.QueryAsync<string>(
+                "dbo.usp_Personnel_DeleteByUserID",
+                new { UserID = userID },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result.FirstOrDefault() ?? "No message returned from stored procedure.";
+        }
     }
 }

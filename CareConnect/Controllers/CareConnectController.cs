@@ -91,6 +91,37 @@ namespace CareConnect.Controllers
             return Ok(result);
         }
 
+        [HttpGet("Admin/Personnels")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<PatientResult>>> GetAllPersonnels()
+        {
+            var personnels = await _service.GetAllPersonnels();
+            return Ok(personnels);
+        }
+
+        [HttpPut("Admin/Personnels/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> UpdatePersonnel([FromBody] PatientDto personnel)
+        {
+            var result = await _service.UpdatePersonnel(personnel);
+            return Ok(result);
+        }
+
+        [HttpGet("Admin/Personnels/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<PatientDto>>> GetPersonnelByID([FromQuery] long personnelID)
+        {
+            var personnel = await _service.GetPersonnelByID(personnelID);
+            return Ok(personnel);
+        }
+
+        [HttpDelete("Admin/Personnels/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeletePersonnelByUserID([FromRoute] long id)
+        {
+            var message = await _service.DeletePersonnelByUserID(id);
+            return Ok(new { Message = message });
+        }
 
     }
 }

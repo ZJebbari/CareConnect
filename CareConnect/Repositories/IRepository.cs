@@ -18,5 +18,11 @@ namespace CareConnect.Repositories
         Task<string> UpdatePhysician(PhysicianDto physician);
         Task<string> DeletePhysicianByUserID(long userID);
         Task<IEnumerable<SpecialtyResult>> GetAllSpecialty();
+
+        // Personnels
+        Task<IEnumerable<PatientResult>> GetAllPersonnels();
+        Task<string> UpdatePersonnel(PatientDto personnel);
+        Task<IEnumerable<PatientDto>> GetPersonnelByID(long personnelID);
+        Task<string> DeletePersonnelByUserID(long userID);
     }
 }

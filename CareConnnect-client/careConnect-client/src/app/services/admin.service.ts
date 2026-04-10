@@ -42,4 +42,16 @@ export class AdminService {
   public getAllSpecialty(): Observable<SpecialtyResult[]> {
     return this.http.get<SpecialtyResult[]>(`${this.baseUrl}/specialty`)
   }
+
+  public getAllPersonnels(): Observable<PatientResult[]> {
+    return this.http.get<PatientResult[]>(`${this.baseUrl}/personnels`);
+  }
+
+  public updatePersonnel(personnelPayload: PatientDto): Observable<string> {
+    return this.http.put(`${this.baseUrl}/personnels/${personnelPayload.userId}`, personnelPayload, {responseType: 'text'});
+  }
+
+  public deletePersonnel(personnelId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/personnels/${personnelId}`);
+  }
 }

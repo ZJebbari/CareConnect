@@ -5,7 +5,6 @@ import { SocketService } from './socket.service';
 import { AdminService } from './admin.service';
 import { PhysicianResult } from '../models/physicianResult';
 import { SpecialtyResult } from '../models/specialtyResult';
-import { PersonnelResult } from '../models/personnelResult';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +23,7 @@ export class dataAdminService {
   private specialties = signal<SpecialtyResult[]>([]);
   public specialtyData = computed(() => this.specialties());
 
-  private personnel = signal<PersonnelResult[]>([]);
+  private personnel = signal<PatientResult[]>([]);
   public personnelData = computed(() => this.personnel());
 
   private socket = inject(SocketService);
@@ -40,7 +39,9 @@ export class dataAdminService {
       const deletedUserId = this.socket.deletedPatient();
       const physicianUserId = this.socket.updatedPhysician();
       const deletedPhysicianUserId = this.socket.deletedPhysician();
-      if (userId !== 0 || deletedUserId !== 0 || physicianUserId !== 0 || deletedPhysicianUserId !== 0) {
+      const personnelUserId = this.socket.updatedPersonnel();
+      const deletedPersonnelUserId = this.socket.deletedPersonnel();
+      if (userId !== 0 || deletedUserId !== 0 || physicianUserId !== 0 || deletedPhysicianUserId !== 0 || personnelUserId !== 0 || deletedPersonnelUserId !== 0) {
         this.fetchPatients();
         this.fetchPhysicians();
         this.fetchPersonnel();
@@ -48,6 +49,8 @@ export class dataAdminService {
         this.socket.clearDeletedPatient();
         this.socket.clearUpdatedPhysician();
         this.socket.clearDeletedPhysician();
+        this.socket.clearUpdatedPersonnel();
+        this.socket.clearDeletedPersonnel();
       }
     })
   }
@@ -65,8 +68,7 @@ export class dataAdminService {
   }
 
   private fetchPersonnel() {
-    // For now, return empty array until backend is implemented
-    this.personnel.set([]);
+    this.api.getAllPersonnels().subscribe((data) => this.personnel.set(data));
   }
 
 }
