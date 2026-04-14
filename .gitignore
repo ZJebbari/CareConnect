@@ -67,6 +67,9 @@ publish-doctor-self-service/
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
+# Local or ad hoc SQL scripts
+CareConnect/Migrations/*.sql
+
 # StyleCop
 StyleCopReport.xml
 
