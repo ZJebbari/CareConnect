@@ -129,6 +129,8 @@ namespace CareConnect.Services
                 return "Physician schedule ID is required.";
             }
 
+            var existingSchedule = await _repository.GetPhysicianScheduleById(physicianScheduleId);
+
             var result = await _repository.DeletePhysicianScheduleById(physicianScheduleId);
 
             if (result.Contains("successfully", StringComparison.OrdinalIgnoreCase))
@@ -138,7 +140,14 @@ namespace CareConnect.Services
                     new
                     {
                         action = "deleted",
-                        PhysicianScheduleId = physicianScheduleId
+                        PhysicianScheduleId = physicianScheduleId,
+                        PhysicianId = existingSchedule?.PhysicianId,
+                        DayOfWeek = existingSchedule?.DayOfWeek,
+                        StartTime = existingSchedule?.StartTime,
+                        EndTime = existingSchedule?.EndTime,
+                        EffectiveStartDate = existingSchedule?.EffectiveStartDate,
+                        EffectiveEndDate = existingSchedule?.EffectiveEndDate,
+                        IsActive = existingSchedule?.IsActive
                     });
             }
 

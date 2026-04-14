@@ -28,6 +28,7 @@ import {
   ScheduleBlockDialogResult,
 } from '../../doctor-scheduling/schedule-block-dialog/schedule-block-dialog.component';
 import { TimeOffDialogComponent } from '../../doctor-scheduling/time-off-dialog/time-off-dialog.component';
+import { SchedulingSocketService } from '../../services/scheduling-socket.service';
 
 @Component({
   selector: 'app-physician-details',
@@ -111,6 +112,7 @@ export class PhysicianDetailsComponent {
 
   private dialog = inject(MatDialog);
   private feedback = inject(UiFeedbackService);
+  private schedulingSocket = inject(SchedulingSocketService);
   
   constructor(private dataService: dataAdminService, private _adminService: AdminService){
     // Initialize form signals from inputs and set original values
@@ -141,6 +143,32 @@ export class PhysicianDetailsComponent {
         });
 
         this.loadSchedulingData();
+      }
+    });
+
+    effect(() => {
+      const scheduleEvent = this.schedulingSocket.physicianScheduleUpdated();
+      const physicianId = this.physicianId();
+
+      if (!scheduleEvent || !physicianId) {
+        return;
+      }
+
+      if (scheduleEvent.physicianId === physicianId) {
+        this.loadSchedules();
+      }
+    });
+
+    effect(() => {
+      const timeOffEvent = this.schedulingSocket.physicianTimeOffUpdated();
+      const physicianId = this.physicianId();
+
+      if (!timeOffEvent || !physicianId) {
+        return;
+      }
+
+      if (timeOffEvent.physicianId === physicianId) {
+        this.loadTimeOff();
       }
     });
   }

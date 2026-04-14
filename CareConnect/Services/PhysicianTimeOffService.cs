@@ -127,6 +127,8 @@ namespace CareConnect.Services
                 return "Physician time off ID is required.";
             }
 
+            var existingTimeOff = await _repository.GetPhysicianTimeOffById(physicianTimeOffId);
+
             var result = await _repository.DeletePhysicianTimeOffById(physicianTimeOffId);
 
             if (result.Contains("successfully", StringComparison.OrdinalIgnoreCase))
@@ -136,7 +138,13 @@ namespace CareConnect.Services
                     new
                     {
                         action = "deleted",
-                        PhysicianTimeOffId = physicianTimeOffId
+                        PhysicianTimeOffId = physicianTimeOffId,
+                        PhysicianId = existingTimeOff?.PhysicianId,
+                        StartDateTime = existingTimeOff?.StartDateTime,
+                        EndDateTime = existingTimeOff?.EndDateTime,
+                        IsAllDay = existingTimeOff?.IsAllDay,
+                        Reason = existingTimeOff?.Reason,
+                        Notes = existingTimeOff?.Notes
                     });
             }
 
