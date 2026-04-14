@@ -1,0 +1,147 @@
+<main class="doctor-page">
+  <section class="page-hero">
+    <div>
+      <p class="eyebrow">Doctor Workspace</p>
+      <h1>My Time Off</h1>
+      <p class="subtitle">
+        Create exceptions that override your weekly clinic hours for vacation, meetings, and protected time.
+      </p>
+
+      <div class="helper-row">
+        <div class="helper-chip helper-chip-green">
+          <mat-icon
+            matTooltip="Time Off creates exceptions that override weekly availability."
+            matTooltipPosition="above"
+            >info</mat-icon
+          >
+          <span>Time Off creates exceptions that override weekly availability.</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="page-nav">
+      <a mat-stroked-button routerLink="/doctor/my-calendar">My Calendar</a>
+      <a mat-stroked-button routerLink="/doctor/my-schedule">My Schedule</a>
+      <a mat-stroked-button routerLink="/doctor/my-time-off">My Time Off</a>
+    </nav>
+  </section>
+
+  @if (contextResolving() && physicianProfileId() === null) {
+    <mat-card class="setup-card">
+      <div class="state-card">
+        <mat-icon>hourglass_top</mat-icon>
+        <p>Resolving your doctor profile…</p>
+      </div>
+    </mat-card>
+  } @else if (contextError() && physicianProfileId() === null) {
+    <mat-card class="setup-card">
+      <div class="setup-copy">
+        <mat-icon>warning</mat-icon>
+        <div>
+          <h2>Unable to load your doctor profile</h2>
+          <p>{{ contextError() }}</p>
+        </div>
+      </div>
+
+      <div class="setup-actions">
+        <button mat-flat-button color="primary" type="button" (click)="retryResolveDoctor()">
+          Retry
+        </button>
+      </div>
+    </mat-card>
+  } @else {
+    <section class="timeoff-grid">
+      <mat-card class="overview-card">
+        <div class="overview-heading">
+          <div>
+            <p class="card-label">Next Six Months</p>
+            <h2>{{ upcomingEntries().length }} upcoming block(s)</h2>
+          </div>
+
+          <button mat-flat-button color="primary" type="button" (click)="openCreateDialog()">
+            Request Time Off
+          </button>
+        </div>
+
+        <p class="overview-copy">
+          Use this page to verify that approved leave and blocked clinical time are reflected before patients book.
+        </p>
+
+        @if (feedbackMessage()) {
+          <div class="feedback-banner success">
+            <mat-icon>check_circle</mat-icon>
+            <p>{{ feedbackMessage() }}</p>
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="feedback-banner error">
+            <mat-icon>error</mat-icon>
+            <p>{{ errorMessage() }}</p>
+          </div>
+        }
+      </mat-card>
+
+      <section class="timeline-section">
+        @if (loading()) {
+          <mat-card class="state-card">
+            <mat-icon>hourglass_top</mat-icon>
+            <p>Loading time off…</p>
+          </mat-card>
+        } @else if (upcomingEntries().length === 0) {
+          <mat-card class="state-card">
+            <mat-icon>event_available</mat-icon>
+            <p>No upcoming time off is scheduled.</p>
+          </mat-card>
+        } @else {
+          <div class="timeline-list">
+            @for (entry of upcomingEntries(); track entry.physicianTimeOffId) {
+              <mat-card class="timeline-card">
+                <div class="timeline-badge"></div>
+
+                <div class="timeline-body">
+                  <div class="timeline-heading">
+                    <div>
+                      <p class="timeoff-date">{{ entry.startDateTime | date:'fullDate' }}</p>
+                      <h3>{{ entry.reason || 'Unavailable' }}</h3>
+                    </div>
+
+                    <mat-chip>{{ entry.isAllDay ? 'All Day' : 'Partial Day' }}</mat-chip>
+                  </div>
+
+                  <p class="time-range">
+                    @if (entry.isAllDay) {
+                      <span>
+                        {{ entry.startDateTime | date:'mediumDate' }}
+                        @if ((entry.startDateTime | date:'yyyy-MM-dd') !== (entry.endDateTime | date:'yyyy-MM-dd')) {
+                          <span> to {{ entry.endDateTime | date:'mediumDate' }}</span>
+                        }
+                      </span>
+                    } @else {
+                      <span>
+                        {{ entry.startDateTime | date:'short' }} - {{ entry.endDateTime | date:'short' }}
+                      </span>
+                    }
+                  </p>
+
+                  @if (entry.notes) {
+                    <p class="notes">{{ entry.notes }}</p>
+                  }
+
+                  <div class="timeline-actions">
+                    <button mat-stroked-button type="button" (click)="openEditDialog(entry)">
+                      Edit
+                    </button>
+                    <button mat-button color="warn" type="button" (click)="deleteTimeOff(entry)">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </mat-card>
+            }
+          </div>
+        }
+      </section>
+    </section>
+  }
+</main>

@@ -1,0 +1,150 @@
+.admin-scheduling-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.admin-scheduling-panel {
+	display: grid;
+	gap: 16px;
+	padding: 20px;
+	border-radius: 16px;
+	background: #f8fbfe;
+	border: 1px solid rgba(26, 60, 95, 0.08);
+}
+
+.panel-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	align-items: flex-start;
+}
+
+.panel-label {
+	margin: 0 0 4px;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	font-size: 0.76rem;
+	font-weight: 700;
+	color: #68839d;
+}
+
+.panel-header h3 {
+	margin: 0;
+	color: #1b2b3c;
+}
+
+.panel-banner {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	border-radius: 14px;
+}
+
+.panel-banner p {
+	margin: 0;
+}
+
+.panel-banner.error {
+	background: rgba(179, 38, 30, 0.10);
+	color: #8c1d18;
+}
+
+.panel-empty-state {
+	min-height: 160px;
+	display: grid;
+	place-items: center;
+	gap: 10px;
+	text-align: center;
+	color: #667688;
+}
+
+.panel-empty-state.compact {
+	min-height: 120px;
+}
+
+.schedule-day-groups,
+.admin-item-stack {
+	display: grid;
+	gap: 12px;
+}
+
+.day-group {
+	display: grid;
+	gap: 10px;
+}
+
+.day-group-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.day-group-header h4 {
+	margin: 0;
+	color: #1b2b3c;
+}
+
+.day-empty {
+	margin: 0;
+	padding: 12px 14px;
+	border-radius: 14px;
+	background: #eef3f8;
+	color: #627285;
+}
+
+.admin-item-card {
+	display: grid;
+	gap: 12px;
+	padding: 16px;
+	border-radius: 16px;
+	background: #ffffff;
+	border: 1px solid rgba(26, 60, 95, 0.08);
+}
+
+.item-kicker {
+	margin: 0 0 6px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #0f5f96;
+}
+
+.admin-item-card h5 {
+	margin: 0 0 6px;
+	font-size: 1rem;
+	color: #17263b;
+}
+
+.item-copy {
+	margin: 0;
+	color: #607184;
+}
+
+.item-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+@media (max-width: 1100px) {
+	.admin-scheduling-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 760px) {
+	.panel-header {
+		flex-direction: column;
+	}
+}

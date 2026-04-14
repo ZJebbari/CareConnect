@@ -1,0 +1,250 @@
+<main class="booking-page">
+	<section class="page-hero">
+		<div>
+			<p class="eyebrow">Scheduling Desk</p>
+			<h1>Book an Appointment</h1>
+			<p class="subtitle">
+				Select a physician, pull live server availability, and create the appointment using the backend scheduling rules.
+			</p>
+		</div>
+
+		<div class="hero-badge">
+			<mat-icon>verified_user</mat-icon>
+			<span>Backend-validated availability</span>
+		</div>
+	</section>
+
+	<section class="booking-layout">
+		<mat-card class="booking-card">
+			<div class="card-header">
+				<div>
+					<p class="card-label">Appointment Details</p>
+					<h2>Create a new booking</h2>
+				</div>
+
+				<button mat-stroked-button type="button" (click)="refreshSlots()" [disabled]="loadingSlots()">
+					Refresh Slots
+				</button>
+			</div>
+
+			<mat-divider></mat-divider>
+
+			@if (loadingReferenceData()) {
+				<div class="state-panel">
+					<mat-spinner diameter="36"></mat-spinner>
+					<p>Loading patients and physicians…</p>
+				</div>
+			} @else {
+				<form class="booking-form" [formGroup]="bookingForm" (ngSubmit)="submitBooking()">
+					<div class="field-grid">
+						<mat-form-field appearance="outline">
+							<mat-label>Patient</mat-label>
+							<mat-select formControlName="patientId">
+								@for (patient of patients(); track trackById($index, patient)) {
+									<mat-option [value]="patient.patiendID">
+										{{ patient.fullName }}
+									</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+
+						<mat-form-field appearance="outline">
+							<mat-label>Doctor</mat-label>
+							<mat-select formControlName="physicianId">
+								@for (physician of physicians(); track trackById($index, physician)) {
+									<mat-option [value]="physician.physicianId">
+										{{ physician.fullName }}
+										@if (physician.specialty) {
+											<span class="option-meta"> | {{ physician.specialty }}</span>
+										}
+									</mat-option>
+								}
+							</mat-select>
+						</mat-form-field>
+
+						<mat-form-field appearance="outline">
+							<mat-label>Appointment date</mat-label>
+							<input
+								matInput
+								[matDatepicker]="appointmentDatePicker"
+								[min]="today"
+								formControlName="appointmentDate"
+							/>
+							<mat-datepicker-toggle matSuffix [for]="appointmentDatePicker"></mat-datepicker-toggle>
+							<mat-datepicker #appointmentDatePicker></mat-datepicker>
+						</mat-form-field>
+
+						<mat-form-field appearance="outline">
+							<mat-label>Appointment type</mat-label>
+							<mat-select formControlName="typeId">
+								@for (appointmentType of appointmentTypes(); track trackAppointmentType($index, appointmentType)) {
+									<mat-option [value]="appointmentType.typeId">
+										{{ appointmentType.typeName }}
+									</mat-option>
+								}
+							</mat-select>
+							<mat-hint>Select a valid type from the backend list.</mat-hint>
+						</mat-form-field>
+					</div>
+
+					<section class="slots-section">
+						<div class="section-header">
+							<div>
+								<p class="card-label">Available Time Slots</p>
+
+						@if (bookingForm.controls.typeId.invalid && bookingForm.controls.typeId.touched) {
+							<p class="validation-message">Appointment type is required before booking.</p>
+						}
+								<h3>
+									@if (selectedDate()) {
+										{{ selectedDate() | date:'fullDate' }}
+									} @else {
+										Select a doctor and date
+									}
+								</h3>
+							</div>
+
+							@if (loadingSlots()) {
+								<span class="inline-status">
+									<mat-spinner diameter="22"></mat-spinner>
+									Refreshing
+								</span>
+							} @else {
+								<span class="slot-count">{{ availableSlots().length }} slot(s)</span>
+							}
+						</div>
+
+						@if (!bookingForm.controls.physicianId.value || !bookingForm.controls.appointmentDate.value) {
+							<div class="empty-panel">
+								<mat-icon>calendar_month</mat-icon>
+								<p>Select a doctor and a date to fetch live server availability.</p>
+							</div>
+						} @else if (!loadingSlots() && availableSlots().length === 0) {
+							<div class="empty-panel">
+								<mat-icon>event_busy</mat-icon>
+								<p>No bookable one-hour slots are available for this physician on the selected date.</p>
+							</div>
+						} @else {
+							<div class="slots-grid">
+								@for (slot of availableSlots(); track trackSlot($index, slot)) {
+									<button
+										mat-stroked-button
+										type="button"
+										class="slot-button"
+										[class.active]="isSelectedSlot(slot)"
+										(click)="chooseTimeSlot(slot)"
+									>
+										{{ slot | date:'shortTime' }}
+									</button>
+								}
+							</div>
+						}
+					</section>
+
+					<div class="form-actions">
+						<button mat-flat-button color="primary" type="submit" [disabled]="!canBookAppointment()">
+							@if (submitting()) {
+								Creating...
+							} @else {
+								Create Appointment
+							}
+						</button>
+					</div>
+				</form>
+			}
+		</mat-card>
+
+		<section class="side-column">
+			<mat-card class="summary-card">
+				<p class="card-label">Booking Summary</p>
+				<h2>
+					@if (selectedPhysician()) {
+						{{ selectedPhysician()?.fullName }}
+					} @else {
+						Select a physician
+					}
+				</h2>
+
+				@if (selectedPhysician()) {
+					<div class="summary-list">
+						<div>
+							<span class="summary-key">Specialty</span>
+							<strong>{{ selectedPhysician()?.specialty || 'Not provided' }}</strong>
+						</div>
+						<div>
+							<span class="summary-key">Email</span>
+							<strong>{{ selectedPhysician()?.email }}</strong>
+						</div>
+						<div>
+							<span class="summary-key">Appointment type</span>
+							<strong>
+								@if (selectedAppointmentType()) {
+									{{ selectedAppointmentType()?.typeName }}
+								} @else {
+									Not selected
+								}
+							</strong>
+						</div>
+						<div>
+							<span class="summary-key">Selected day</span>
+							<strong>{{ selectedDate() | date:'mediumDate' }}</strong>
+						</div>
+						<div>
+							<span class="summary-key">Selected slot</span>
+							<strong>
+								@if (bookingForm.controls.timeSlot.value) {
+									{{ bookingForm.controls.timeSlot.value | date:'shortTime' }}
+								} @else {
+									Not selected
+								}
+							</strong>
+						</div>
+					</div>
+				} @else {
+					<p class="summary-copy">
+						Once a physician is selected, this panel shows the active booking context.
+					</p>
+				}
+			</mat-card>
+
+			<mat-card class="summary-card patient-card">
+				<p class="card-label">Patient</p>
+				<h2>
+					@if (selectedPatient()) {
+						{{ selectedPatient()?.fullName }}
+					} @else {
+						Select a patient
+					}
+				</h2>
+
+				@if (selectedPatient()) {
+					<div class="summary-list">
+						<div>
+							<span class="summary-key">Email</span>
+							<strong>{{ selectedPatient()?.email }}</strong>
+						</div>
+						<div>
+							<span class="summary-key">Phone</span>
+							<strong>{{ selectedPatient()?.phone }}</strong>
+						</div>
+						<div>
+							<span class="summary-key">Address</span>
+							<strong>{{ selectedPatient()?.address }}</strong>
+						</div>
+					</div>
+				}
+			</mat-card>
+
+			@if (successMessage() || errorMessage()) {
+				<mat-card class="feedback-card" [class.error]="!!errorMessage()" [class.success]="!!successMessage()">
+					<div class="feedback-heading">
+						<mat-icon>{{ errorMessage() ? 'error' : 'check_circle' }}</mat-icon>
+						<h3>{{ errorMessage() ? 'Booking failed' : 'Booking created' }}</h3>
+					</div>
+
+					<p>{{ errorMessage() || successMessage() }}</p>
+				</mat-card>
+			}
+		</section>
+	</section>
+</main>

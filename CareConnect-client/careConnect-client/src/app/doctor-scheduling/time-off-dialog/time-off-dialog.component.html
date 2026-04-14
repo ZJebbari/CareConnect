@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>
+  {{ data.mode === 'create' ? 'Request Time Off' : 'Edit Time Off' }}
+</h2>
+
+<mat-dialog-content>
+  <form class="dialog-form" [formGroup]="form">
+    <mat-checkbox formControlName="isAllDay">Full day request</mat-checkbox>
+
+    <div class="date-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Start date</mat-label>
+        <input matInput type="date" formControlName="startDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End date</mat-label>
+        <input matInput type="date" formControlName="endDate" />
+      </mat-form-field>
+    </div>
+
+    @if (!form.controls.isAllDay.value) {
+      <div class="time-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Start time</mat-label>
+          <input matInput type="time" formControlName="startTime" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>End time</mat-label>
+          <input matInput type="time" formControlName="endTime" />
+        </mat-form-field>
+      </div>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Reason</mat-label>
+      <input matInput maxlength="120" formControlName="reason" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Notes</mat-label>
+      <textarea matInput rows="4" maxlength="500" formControlName="notes"></textarea>
+    </mat-form-field>
+
+    @if (errorMessage) {
+      <p class="dialog-error">{{ errorMessage }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="button" (click)="submit()">
+    {{ data.mode === 'create' ? 'Save Request' : 'Save Changes' }}
+  </button>
+</mat-dialog-actions>

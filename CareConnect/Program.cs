@@ -45,6 +45,14 @@ builder.Services.AddScoped<IService, Service>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAppointmentTypeRepository, AppointmentTypeRepository>();
+builder.Services.AddScoped<IAppointmentTypeService, AppointmentTypeService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IPhysicianScheduleRepository, PhysicianScheduleRepository>();
+builder.Services.AddScoped<IPhysicianTimeOffRepository, PhysicianTimeOffRepository>();
+builder.Services.AddScoped<IAppointmentSchedulingService, AppointmentSchedulingService>();
+builder.Services.AddScoped<IPhysicianScheduleService, PhysicianScheduleService>();
+builder.Services.AddScoped<IPhysicianTimeOffService, PhysicianTimeOffService>();
 
 builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 
@@ -81,7 +89,9 @@ builder.Services
                 StringValues accessToken = context.Request.Query["access_token"];
                 var path = context.HttpContext.Request.Path;
 
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/careconnectHub"))
+                if (!string.IsNullOrEmpty(accessToken)
+                    && (path.StartsWithSegments("/careconnectHub")
+                        || path.StartsWithSegments("/schedulingHub")))
                 {
                     context.Token = accessToken;
                 }
@@ -154,6 +164,7 @@ app.UseAuthorization();  // Enforce [Authorize] attributes
 app.MapControllers(); // Maps all [ApiController] routes (/api/*)
 
 app.MapHub<CareConnectHub>("/careconnectHub"); // SignalR hub endpoint for realtime updates
+app.MapHub<SchedulingHub>("/schedulingHub"); // SignalR hub endpoint for scheduling updates
 
 // Start the server
 app.Run();

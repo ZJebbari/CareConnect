@@ -5,6 +5,7 @@ using CareConnect.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CareConnect.Common;
 
 namespace CareConnect.Controllers
 {
@@ -63,6 +64,26 @@ namespace CareConnect.Controllers
                 return NotFound("No physician found.");
             }
             return Ok(result);
+        }
+
+        [HttpGet("Doctor/CurrentPhysician")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<ActionResult<CurrentDoctorResult>> GetCurrentPhysician()
+        {
+            var userId = CurrentUserHelper.GetUserId(User);
+
+            if (!userId.HasValue)
+            {
+                return Unauthorized();
+            }
+
+            var physician = await _service.GetPhysicianByUserId(userId.Value);
+            if (physician is null)
+            {
+                return NotFound(new { message = "Doctor profile was not found." });
+            }
+
+            return Ok(physician);
         }
 
         [HttpPut("Admin/Physicians/{id}")]

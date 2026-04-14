@@ -4,7 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts\**;publish-doctor-self-service\**</DefaultItemExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="artifacts\**;publish-doctor-self-service\**" />
+    <Content Remove="artifacts\**;publish-doctor-self-service\**" />
+    <EmbeddedResource Remove="artifacts\**;publish-doctor-self-service\**" />
+    <None Remove="artifacts\**;publish-doctor-self-service\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

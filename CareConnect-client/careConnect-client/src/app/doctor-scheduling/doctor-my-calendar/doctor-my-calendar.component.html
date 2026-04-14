@@ -1,0 +1,171 @@
+<main class="doctor-page">
+  <section class="page-hero">
+    <div>
+      <p class="eyebrow">Doctor Workspace</p>
+      <h1>My Calendar</h1>
+      <p class="subtitle">
+        Review how your weekly clinic hours, same-day time-off exceptions, and final bookable availability apply to the selected date.
+      </p>
+
+      <div class="helper-row">
+        <div class="helper-chip helper-chip-blue">
+          <mat-icon
+            matTooltip="Weekly Availability defines your recurring clinic hours."
+            matTooltipPosition="above"
+            >info</mat-icon
+          >
+          <span>Weekly Availability defines your recurring clinic hours.</span>
+        </div>
+        <div class="helper-chip helper-chip-green">
+          <mat-icon
+            matTooltip="Time Off creates exceptions that override weekly availability."
+            matTooltipPosition="above"
+            >event_busy</mat-icon
+          >
+          <span>Time Off creates exceptions that override weekly availability.</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="page-nav">
+      <a mat-stroked-button routerLink="/doctor/my-calendar">My Calendar</a>
+      <a mat-stroked-button routerLink="/doctor/my-schedule">My Schedule</a>
+      <a mat-stroked-button routerLink="/doctor/my-time-off">My Time Off</a>
+    </nav>
+  </section>
+
+  @if (contextResolving() && physicianProfileId() === null) {
+    <mat-card class="setup-card">
+      <div class="empty-panel">
+        <mat-icon>hourglass_top</mat-icon>
+        <p>Resolving your doctor profile…</p>
+      </div>
+    </mat-card>
+  } @else if (contextError() && physicianProfileId() === null) {
+    <mat-card class="setup-card">
+      <div class="setup-copy">
+        <mat-icon>warning</mat-icon>
+        <div>
+          <h2>Unable to load your doctor profile</h2>
+          <p>{{ contextError() }}</p>
+        </div>
+      </div>
+
+      <div class="setup-actions">
+        <button mat-flat-button color="primary" type="button" (click)="retryResolveDoctor()">
+          Retry
+        </button>
+      </div>
+    </mat-card>
+  } @else {
+    <section class="calendar-grid">
+      <mat-card class="calendar-card">
+        <div class="card-heading">
+          <div>
+            <p class="card-label">Selected Day</p>
+            <h2>{{ selectedDate() | date:'fullDate' }}</h2>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-calendar
+          [selected]="selectedDate()"
+          (selectedChange)="updateSelectedDate($event)"
+        ></mat-calendar>
+      </mat-card>
+
+      <mat-card class="availability-card">
+        <div class="card-heading">
+          <div>
+            <p class="card-label">Available Slots</p>
+            <h2>{{ availableSlots().length }} open this day</h2>
+          </div>
+
+          @if (isRefreshing()) {
+            <mat-chip class="status-chip refreshing">Refreshing</mat-chip>
+          } @else {
+            <mat-chip class="status-chip ready">Live</mat-chip>
+          }
+        </div>
+
+        <mat-divider></mat-divider>
+
+        @if (availableSlots().length === 0) {
+          <div class="empty-panel">
+            <mat-icon>event_busy</mat-icon>
+            <p>No open one-hour slots were found for this day.</p>
+          </div>
+        } @else {
+          <mat-list>
+            @for (slot of availableSlots(); track slot.toISOString()) {
+              <mat-list-item>
+                <span matListItemTitle>{{ slot | date:'shortTime' }}</span>
+                <span matListItemLine>Open for booking</span>
+              </mat-list-item>
+            }
+          </mat-list>
+        }
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <div class="card-heading compact">
+          <div>
+            <p class="card-label">Clinic Coverage Summary</p>
+            <h2>{{ selectedDate() | date:'fullDate' }}</h2>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <section class="summary-section">
+          <h3>Base Weekly Availability</h3>
+          @if (daySchedules().length === 0) {
+            <p class="summary-empty">No recurring clinic hours are configured for this weekday.</p>
+          } @else {
+            <div class="coverage-stack">
+              @for (schedule of daySchedules(); track schedule.physicianScheduleId) {
+                <div class="coverage-item">
+                  <p class="coverage-title">Every {{ selectedDate() | date:'EEEE' }}</p>
+                  <strong>{{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}</strong>
+                  <span>Repeats Weekly</span>
+                  <span>Effective Starting {{ schedule.effectiveStartDate | date:'mediumDate' }}</span>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="summary-section">
+          <h3>Same-Day Overrides</h3>
+          @if (timeOffEntries().length === 0) {
+            <p class="summary-empty">No time-off exceptions override this selected date.</p>
+          } @else {
+            <div class="timeoff-stack">
+              @for (entry of timeOffEntries(); track entry.physicianTimeOffId) {
+                <div class="timeoff-item">
+                  <strong>{{ entry.reason || 'Time Off Override' }}</strong>
+                  @if (entry.isAllDay) {
+                    <span>All day override for {{ selectedDate() | date:'mediumDate' }}</span>
+                  } @else {
+                    <span>
+                      {{ entry.startDateTime | date:'shortTime' }} - {{ entry.endDateTime | date:'shortTime' }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <section class="summary-section summary-section-final">
+          <h3>Final Computed Availability</h3>
+          <div class="final-status" [class.final-status-ready]="finalAvailabilitySummary().tone === 'ready'" [class.final-status-caution]="finalAvailabilitySummary().tone === 'caution'" [class.final-status-blocked]="finalAvailabilitySummary().tone === 'blocked'">
+            <strong>{{ finalAvailabilitySummary().title }}</strong>
+            <p>{{ finalAvailabilitySummary().detail }}</p>
+          </div>
+        </section>
+      </mat-card>
+    </section>
+  }
+</main>

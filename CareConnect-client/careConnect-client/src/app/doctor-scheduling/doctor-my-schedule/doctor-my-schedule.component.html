@@ -1,0 +1,150 @@
+<main class="doctor-page">
+  <section class="page-hero">
+    <div>
+      <p class="eyebrow">Doctor Workspace</p>
+      <h1>My Schedule</h1>
+      <p class="subtitle">
+        Set the recurring clinic hours that repeat every week unless a time-off exception overrides them.
+      </p>
+
+      <div class="helper-row">
+        <div class="helper-chip">
+          <mat-icon
+            matTooltip="Weekly Availability defines your recurring clinic hours."
+            matTooltipPosition="above"
+            >info</mat-icon
+          >
+          <span>Weekly Availability defines your recurring clinic hours.</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="page-nav">
+      <a mat-stroked-button routerLink="/doctor/my-calendar">My Calendar</a>
+      <a mat-stroked-button routerLink="/doctor/my-schedule">My Schedule</a>
+      <a mat-stroked-button routerLink="/doctor/my-time-off">My Time Off</a>
+    </nav>
+  </section>
+
+  @if (contextResolving() && physicianProfileId() === null) {
+    <mat-card class="setup-card">
+      <div class="empty-panel">
+        <mat-icon>hourglass_top</mat-icon>
+        <p>Resolving your doctor profile…</p>
+      </div>
+    </mat-card>
+  } @else if (contextError() && physicianProfileId() === null) {
+    <mat-card class="setup-card">
+      <div class="setup-copy">
+        <mat-icon>warning</mat-icon>
+        <div>
+          <h2>Unable to load your doctor profile</h2>
+          <p>{{ contextError() }}</p>
+        </div>
+      </div>
+
+      <div class="setup-actions">
+        <button mat-flat-button color="primary" type="button" (click)="retryResolveDoctor()">
+          Retry
+        </button>
+      </div>
+    </mat-card>
+  } @else {
+    <mat-card class="page-card">
+      <div class="page-card-header">
+        <div>
+          <p class="card-label">Recurring Availability</p>
+          <h2>{{ schedules().length }} active schedule block(s)</h2>
+          <p class="header-helper-text">
+            Create separate recurring availability blocks for each weekday you work.
+          </p>
+        </div>
+
+        <button mat-flat-button color="primary" type="button" (click)="openCreateDialog()">
+          Set Weekly Availability
+        </button>
+      </div>
+
+      <div class="coverage-summary" [class.coverage-summary-warning]="hasIncompleteCoverage()">
+        <mat-icon>{{ hasIncompleteCoverage() ? 'warning' : 'task_alt' }}</mat-icon>
+        <p>{{ weeklyCoverageMessage() }}</p>
+      </div>
+
+      @if (feedbackMessage()) {
+        <div class="feedback-banner success">
+          <mat-icon>check_circle</mat-icon>
+          <p>{{ feedbackMessage() }}</p>
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <div class="feedback-banner error">
+          <mat-icon>error</mat-icon>
+          <p>{{ errorMessage() }}</p>
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="empty-panel">
+          <mat-icon>hourglass_top</mat-icon>
+          <p>Loading your weekly schedule…</p>
+        </div>
+      } @else if (schedules().length === 0) {
+        <div class="empty-panel">
+          <mat-icon>event_busy</mat-icon>
+          <p>No recurring schedule has been configured yet.</p>
+        </div>
+      } @else {
+        <mat-accordion class="schedule-accordion" multi>
+          @for (group of groupedSchedules(); track trackByDay($index, group)) {
+            <mat-expansion-panel [expanded]="group.schedules.length > 0">
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ group.dayLabel }}</mat-panel-title>
+                <mat-panel-description>
+                  {{ group.schedules.length }} block(s)
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              @if (group.schedules.length === 0) {
+                <p class="day-empty">No weekly availability configured for {{ group.dayLabel }}.</p>
+              } @else {
+                <div class="schedule-stack">
+                  @for (schedule of group.schedules; track schedule.physicianScheduleId) {
+                    <article class="schedule-item">
+                      <div class="schedule-main">
+                        <p class="schedule-recurring-label">Every {{ dayLabelFor(schedule.dayOfWeek) }}</p>
+                        <h3>{{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}</h3>
+                        <p class="schedule-detail">Repeats Weekly</p>
+                        <p class="schedule-detail">
+                          Effective Starting {{ schedule.effectiveStartDate | date:'mediumDate' }}
+                        </p>
+                        @if (schedule.effectiveEndDate) {
+                          <p class="schedule-detail">
+                            Ends {{ schedule.effectiveEndDate | date:'mediumDate' }}
+                          </p>
+                        }
+                      </div>
+
+                      <div class="schedule-meta">
+                        <mat-chip>Slot {{ schedule.slotDurationMinutes }} min</mat-chip>
+                        <mat-chip>{{ schedule.isActive ? 'Active' : 'Inactive' }}</mat-chip>
+                        <div class="schedule-actions">
+                          <button mat-stroked-button type="button" (click)="openEditDialog(schedule)">
+                            Edit
+                          </button>
+                          <button mat-button color="warn" type="button" (click)="deleteSchedule(schedule)">
+                            {{ schedule.isActive ? 'Delete' : 'Remove' }}
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  }
+                </div>
+              }
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+      }
+    </mat-card>
+  }
+</main>

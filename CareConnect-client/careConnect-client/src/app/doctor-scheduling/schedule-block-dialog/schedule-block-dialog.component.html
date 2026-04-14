@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>
+  {{ data.mode === 'create' ? 'Set Weekly Availability' : 'Edit Weekly Availability' }}
+</h2>
+
+<mat-dialog-content>
+  <form class="dialog-form" [formGroup]="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Apply to weekday(s)</mat-label>
+      <mat-select formControlName="selectedWeekdays" multiple>
+        @for (day of dayOptions; track day.value) {
+          <mat-option [value]="day.value">{{ day.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint>Quick add: apply the same recurring clinic hours to multiple weekdays.</mat-hint>
+    </mat-form-field>
+
+    <div class="time-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Start time</mat-label>
+        <input matInput type="time" formControlName="startTime" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End time</mat-label>
+        <input matInput type="time" formControlName="endTime" />
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Slot duration (minutes)</mat-label>
+      <input matInput type="number" min="5" step="5" formControlName="slotDurationMinutes" />
+    </mat-form-field>
+
+    <div class="date-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Effective start</mat-label>
+        <input matInput type="date" formControlName="effectiveStartDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Effective end</mat-label>
+        <input matInput type="date" formControlName="effectiveEndDate" />
+      </mat-form-field>
+    </div>
+
+    <mat-slide-toggle formControlName="isActive">Schedule block is active</mat-slide-toggle>
+
+    <p class="dialog-helper-text">
+      Create separate recurring availability blocks for each weekday you work.
+    </p>
+
+    @if (errorMessage) {
+      <p class="dialog-error">{{ errorMessage }}</p>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="button" (click)="submit()">
+    {{ data.mode === 'create' ? 'Save Weekly Availability' : 'Save Changes' }}
+  </button>
+</mat-dialog-actions>

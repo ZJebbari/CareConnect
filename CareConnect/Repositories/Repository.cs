@@ -94,6 +94,18 @@ namespace CareConnect.Repositories
             return result;
         }
 
+        public async Task<CurrentDoctorResult?> GetPhysicianByUserId(long userId)
+        {
+            var result = await Connection.QuerySingleOrDefaultAsync<CurrentDoctorResult>(
+                "dbo.GetPhysicianByUserId",
+                new { UserId = userId },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
         public async Task<string> UpdatePhysician(PhysicianDto physician)
         {
             var specialtyId = physician.SpecialtyID;

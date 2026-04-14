@@ -1,0 +1,35 @@
+.dialog-form {
+  display: grid;
+  gap: 16px;
+  min-width: min(560px, 100%);
+  padding-top: 8px;
+}
+
+.time-row,
+.date-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dialog-error {
+  margin: 0;
+  color: #b3261e;
+}
+
+.dialog-helper-text {
+  margin: 0;
+  color: #5f6f82;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .dialog-form {
+    min-width: 0;
+  }
+
+  .time-row,
+  .date-row {
+    grid-template-columns: 1fr;
+  }
+}

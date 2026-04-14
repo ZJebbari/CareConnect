@@ -1,0 +1,302 @@
+.doctor-page {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(0, 115, 200, 0.10), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #eef3f8 100%);
+}
+
+.page-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0f5f96;
+}
+
+.page-hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  color: #15283c;
+}
+
+.subtitle {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: #556476;
+  line-height: 1.5;
+}
+
+.helper-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.helper-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.helper-chip mat-icon {
+  transform: scale(0.9);
+}
+
+.helper-chip-blue {
+  background: rgba(15, 95, 150, 0.10);
+  color: #0f5f96;
+}
+
+.helper-chip-green {
+  background: rgba(24, 114, 69, 0.10);
+  color: #146f42;
+}
+
+.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.setup-card,
+.calendar-card,
+.availability-card,
+.summary-card {
+  border-radius: 20px;
+  border: 1px solid rgba(26, 60, 95, 0.08);
+  box-shadow: 0 18px 48px rgba(18, 39, 62, 0.08);
+}
+
+.setup-card {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.setup-copy {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.setup-copy mat-icon {
+  color: #0f5f96;
+  transform: scale(1.2);
+}
+
+.setup-copy h2 {
+  margin: 0 0 6px;
+}
+
+.setup-copy p {
+  margin: 0;
+  color: #5c6b7b;
+}
+
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr 0.9fr;
+  gap: 20px;
+}
+
+.calendar-card,
+.availability-card,
+.summary-card {
+  padding: 20px;
+}
+
+.card-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.card-heading.compact {
+  margin-bottom: 12px;
+}
+
+.card-label {
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #68839d;
+}
+
+.card-heading h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #1b2b3c;
+}
+
+.status-chip {
+  color: #fff !important;
+}
+
+.status-chip.ready {
+  background: #177245;
+}
+
+.status-chip.refreshing {
+  background: #9d6400;
+}
+
+.empty-panel {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #667688;
+  gap: 10px;
+}
+
+.empty-panel mat-icon {
+  transform: scale(1.5);
+}
+
+.summary-section {
+  padding: 18px 0 0;
+}
+
+.summary-section h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.summary-empty {
+  margin: 0;
+  color: #667688;
+}
+
+.pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.coverage-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.coverage-item {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f3f7fb;
+}
+
+.coverage-item strong {
+  font-size: 1rem;
+  color: #1b2b3c;
+}
+
+.coverage-item span {
+  color: #607184;
+}
+
+.coverage-title {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0f5f96;
+}
+
+.timeoff-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.timeoff-item {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f3f7fb;
+}
+
+.timeoff-item span {
+  color: #607184;
+}
+
+.summary-section-final {
+  padding-bottom: 0;
+}
+
+.final-status {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #eef3f8;
+  color: #304457;
+}
+
+.final-status strong,
+.final-status p {
+  margin: 0;
+}
+
+.final-status-ready {
+  background: rgba(20, 138, 69, 0.10);
+  color: #146f42;
+}
+
+.final-status-caution {
+  background: rgba(157, 100, 0, 0.12);
+  color: #8a5b00;
+}
+
+.final-status-blocked {
+  background: rgba(179, 38, 30, 0.10);
+  color: #8c1d18;
+}
+
+@media (max-width: 1100px) {
+  .calendar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .doctor-page {
+    padding: 16px;
+  }
+
+  .page-hero {
+    flex-direction: column;
+  }
+
+  .setup-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

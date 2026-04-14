@@ -1,0 +1,258 @@
+.doctor-page {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(194, 194, 0, 0.12), transparent 22%),
+    linear-gradient(180deg, #fafcfe 0%, #edf3f8 100%);
+}
+
+.page-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #7b6400;
+}
+
+.page-hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #17263b;
+}
+
+.subtitle {
+  max-width: 700px;
+  margin: 10px 0 0;
+  line-height: 1.5;
+  color: #5a6b7c;
+}
+
+.helper-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.helper-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(123, 100, 0, 0.10);
+  color: #6a5500;
+  font-size: 0.95rem;
+}
+
+.helper-chip mat-icon {
+  transform: scale(0.9);
+}
+
+.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.setup-card,
+.page-card {
+  border-radius: 20px;
+  border: 1px solid rgba(26, 60, 95, 0.08);
+  box-shadow: 0 18px 48px rgba(18, 39, 62, 0.08);
+}
+
+.setup-card {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+
+.setup-copy {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.setup-copy h2,
+.page-card-header h2 {
+  margin: 0;
+}
+
+.setup-copy p {
+  margin: 6px 0 0;
+  color: #5d6e80;
+}
+
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-card {
+  padding: 20px;
+}
+
+.feedback-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.feedback-banner p {
+  margin: 0;
+}
+
+.feedback-banner.success {
+  background: rgba(20, 138, 69, 0.10);
+  color: #146f42;
+}
+
+.feedback-banner.error {
+  background: rgba(179, 38, 30, 0.10);
+  color: #8c1d18;
+}
+
+.page-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.header-helper-text {
+  margin: 8px 0 0;
+  color: #607184;
+  max-width: 520px;
+}
+
+.coverage-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(20, 138, 69, 0.08);
+  color: #146f42;
+}
+
+.coverage-summary p {
+  margin: 0;
+}
+
+.coverage-summary-warning {
+  background: rgba(157, 100, 0, 0.12);
+  color: #8a5b00;
+}
+
+.card-label {
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #68839d;
+}
+
+.empty-panel {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  text-align: center;
+  color: #687789;
+}
+
+.schedule-accordion {
+  display: grid;
+  gap: 14px;
+}
+
+.schedule-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.schedule-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f4f7fb;
+}
+
+.schedule-main h3 {
+  margin: 0 0 6px;
+}
+
+.schedule-recurring-label {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7b6400;
+}
+
+.schedule-detail {
+  margin: 0;
+  color: #627285;
+}
+
+.schedule-main p,
+.day-empty {
+  margin: 0;
+  color: #627285;
+}
+
+.schedule-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+  justify-content: flex-end;
+}
+
+.schedule-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .doctor-page {
+    padding: 16px;
+  }
+
+  .page-hero,
+  .page-card-header,
+  .schedule-item {
+    flex-direction: column;
+  }
+
+  .setup-actions {
+    flex-direction: column;
+  }
+
+  .schedule-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}

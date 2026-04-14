@@ -1,0 +1,183 @@
+<div class="expansion-panel-container">
+  <div class="expansion-panel-section mat-elevation-z3">
+    <div class="expansion-panel-content-container">
+      <div class="expansion-panel-content">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name</mat-label>
+          <input matInput name="fullName" type="text" #fullNameModel="ngModel" [ngModel]="fullName()" (ngModelChange)="this.fullName.set($event)" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Specialty</mat-label>
+          <mat-select
+            name="specialty"
+            #specialtyModel="ngModel"
+            [ngModel]="specialty()"
+            (ngModelChange)="this.specialty.set($event)">
+            <mat-option *ngFor="let s of this.specialties()" [value]="s.specialty">
+              {{ s.specialty }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput name="email" type="email" #emailModel="ngModel" [ngModel]="email()" (ngModelChange)="this.email.set($event)" />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput name="phone" type="text" #phoneModel="ngModel" [ngModel]="phone()" (ngModelChange)="this.phone.set($event)" />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Bio</mat-label>
+          <textarea matInput name="bio" #bioModel="ngModel" [ngModel]="bio()" (ngModelChange)="this.bio.set($event)" rows="3"></textarea>
+        </mat-form-field>
+      </div>
+      
+      <div class="expansion-panel-content">
+        <button mat-flat-button color="warn" class="standard-button" (click)="deletePhysician()">
+          Delete Physician
+        </button>
+        <button mat-flat-button color="primary" class="standard-button" (click)="updatePhysician()" [disabled]="!isDirty()">
+          Update Physician
+        </button>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <section class="admin-scheduling-grid">
+      <article class="admin-scheduling-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-label">Weekly Availability</p>
+            <h3>Manage recurring clinic hours</h3>
+          </div>
+
+          <button mat-flat-button color="primary" class="standard-button" (click)="openCreateScheduleDialog()">
+            Add Weekly Availability
+          </button>
+        </div>
+
+        @if (schedulingError()) {
+          <div class="panel-banner error">
+            <mat-icon>error</mat-icon>
+            <p>{{ schedulingError() }}</p>
+          </div>
+        }
+
+        @if (loadingSchedules()) {
+          <div class="panel-empty-state">
+            <mat-icon>hourglass_top</mat-icon>
+            <p>Loading weekly availability…</p>
+          </div>
+        } @else {
+          <div class="schedule-day-groups">
+            @for (group of groupedSchedules(); track group.dayLabel) {
+              <section class="day-group">
+                <div class="day-group-header">
+                  <h4>{{ group.dayLabel }}</h4>
+                  <mat-chip>{{ group.schedules.length }} block(s)</mat-chip>
+                </div>
+
+                @if (group.schedules.length === 0) {
+                  <p class="day-empty">No weekly availability configured.</p>
+                } @else {
+                  <div class="admin-item-stack">
+                    @for (schedule of group.schedules; track schedule.physicianScheduleId) {
+                      <article class="admin-item-card">
+                        <div>
+                          <p class="item-kicker">Every {{ dayLabelFor(schedule.dayOfWeek) }}</p>
+                          <h5>{{ formatTime(schedule.startTime) }} - {{ formatTime(schedule.endTime) }}</h5>
+                          <p class="item-copy">
+                            Effective {{ schedule.effectiveStartDate | date:'mediumDate' }}
+                            @if (schedule.effectiveEndDate) {
+                              <span> to {{ schedule.effectiveEndDate | date:'mediumDate' }}</span>
+                            }
+                          </p>
+                        </div>
+
+                        <div class="item-meta">
+                          <mat-chip>Slot {{ schedule.slotDurationMinutes }} min</mat-chip>
+                          <mat-chip>{{ schedule.isActive ? 'Active' : 'Inactive' }}</mat-chip>
+                        </div>
+
+                        <div class="item-actions">
+                          <button mat-stroked-button (click)="openEditScheduleDialog(schedule)">Edit</button>
+                          <button mat-stroked-button (click)="toggleScheduleActive(schedule, !schedule.isActive)">
+                            {{ schedule.isActive ? 'Deactivate' : 'Activate' }}
+                          </button>
+                          <button mat-button color="warn" (click)="deleteSchedule(schedule)">Delete</button>
+                        </div>
+                      </article>
+                    }
+                  </div>
+                }
+              </section>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="admin-scheduling-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-label">Time Off / Overrides</p>
+            <h3>Manage physician exceptions</h3>
+          </div>
+
+          <button mat-flat-button color="primary" class="standard-button" (click)="openCreateTimeOffDialog()">
+            Add Time Off
+          </button>
+        </div>
+
+        @if (timeOffError()) {
+          <div class="panel-banner error">
+            <mat-icon>error</mat-icon>
+            <p>{{ timeOffError() }}</p>
+          </div>
+        }
+
+        @if (loadingTimeOff()) {
+          <div class="panel-empty-state">
+            <mat-icon>hourglass_top</mat-icon>
+            <p>Loading time off entries…</p>
+          </div>
+        } @else if (sortedTimeOff().length === 0) {
+          <div class="panel-empty-state compact">
+            <mat-icon>event_available</mat-icon>
+            <p>No time off or override entries are configured.</p>
+          </div>
+        } @else {
+          <div class="admin-item-stack">
+            @for (entry of sortedTimeOff(); track entry.physicianTimeOffId) {
+              <article class="admin-item-card">
+                <div>
+                  <p class="item-kicker">{{ entry.isAllDay ? 'All-Day Override' : 'Partial-Day Override' }}</p>
+                  <h5>{{ entry.reason || 'Unavailable' }}</h5>
+                  <p class="item-copy">
+                    @if (entry.isAllDay) {
+                      <span>{{ entry.startDateTime | date:'mediumDate' }} to {{ entry.endDateTime | date:'mediumDate' }}</span>
+                    } @else {
+                      <span>{{ entry.startDateTime | date:'medium' }} - {{ entry.endDateTime | date:'medium' }}</span>
+                    }
+                  </p>
+                  @if (entry.notes) {
+                    <p class="item-copy">{{ entry.notes }}</p>
+                  }
+                </div>
+
+                <div class="item-actions">
+                  <button mat-stroked-button (click)="openEditTimeOffDialog(entry)">Edit</button>
+                  <button mat-button color="warn" (click)="deleteTimeOff(entry)">Delete</button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </article>
+    </section>
+  </div>
+</div>
