@@ -3,6 +3,9 @@ using CareConnect.Models.Dtos;
 using CareConnect.Repositories;
 using CareConnect.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Http;
+using CareConnect.Common;
+using Microsoft.Data.SqlClient;
 
 namespace CareConnect.Services
 {
@@ -10,32 +13,48 @@ namespace CareConnect.Services
         IAppointmentRepository _appointmentRepository,
         IPhysicianScheduleRepository _physicianScheduleRepository,
         IPhysicianTimeOffRepository _physicianTimeOffRepository,
-        IHubContext<SchedulingHub> _schedulingHubContext) : IAppointmentSchedulingService
+        IHubContext<SchedulingHub> _schedulingHubContext,
+        IUserService _userService,
+        IHttpContextAccessor _httpContextAccessor) : IAppointmentSchedulingService
     {
         private static readonly TimeSpan AppointmentDuration = TimeSpan.FromHours(1);
 
         public async Task<(bool Success, string Message, Appointment? Appointment)> ScheduleAppointment(Appointment appointment)
         {
+            var currentUser = _httpContextAccessor.HttpContext?.User;
+            if (currentUser?.Identity?.IsAuthenticated == true && currentUser.IsInRole("Patient"))
+            {
+                var userId = CurrentUserHelper.GetUserId(currentUser);
+                if (!userId.HasValue)
+                {
+                    return (false, "Authenticated patient user could not be resolved.", null);
+                }
+
+                var resolvedPatientId = await _userService.ResolvePatientIdByUserIdAsync(userId.Value);
+                if (!resolvedPatientId.HasValue)
+                {
+                    return (false, "Patient profile was not found for authenticated user.", null);
+                }
+
+                appointment.PatientId = resolvedPatientId.Value;
+            }
+
             var validationMessage = ValidateAppointmentRequest(appointment, isUpdate: false);
             if (validationMessage is not null)
             {
                 return (false, validationMessage, null);
             }
 
-            var availability = await ValidateAppointmentAvailabilityInternal(
-                appointment.PhysicianId!.Value,
-                appointment.AppointmentTime!.Value,
-                null);
-            if (!availability.Success)
+            Appointment? createdAppointment;
+            try
             {
-                return (false, availability.Message, null);
+                createdAppointment = await _appointmentRepository.CreateAppointment(appointment);
+            }
+            catch (SqlException ex) when (TryMapBookingConflict(ex, out var conflictMessage))
+            {
+                return (false, conflictMessage, null);
             }
 
-            appointment.AppointmentStatus ??= true;
-            appointment.CreatedAt ??= DateTime.UtcNow;
-            appointment.UpdatedAt = null;
-
-            var createdAppointment = await _appointmentRepository.CreateAppointment(appointment);
             if (createdAppointment is null)
             {
                 return (false, "Failed to create appointment.", null);
@@ -79,7 +98,7 @@ namespace CareConnect.Services
                 return (false, availability.Message, null);
             }
 
-            appointment.AppointmentStatus ??= true;
+            appointment.AppointmentStatus ??= 1;
             appointment.CreatedAt = existingAppointment.CreatedAt;
             appointment.UpdatedAt = DateTime.UtcNow;
 
@@ -117,7 +136,7 @@ namespace CareConnect.Services
                 return (false, "Appointment was not found.", null);
             }
 
-            if (existingAppointment.AppointmentStatus.HasValue && !existingAppointment.AppointmentStatus.Value)
+            if (existingAppointment.AppointmentStatus == 2)
             {
                 return (false, "Appointment is already cancelled.", existingAppointment);
             }
@@ -146,6 +165,63 @@ namespace CareConnect.Services
         public async Task<(bool Success, string Message)> ValidateAppointmentAvailability(int physicianId, DateTime appointmentTime)
         {
             return await ValidateAppointmentAvailabilityInternal(physicianId, appointmentTime, null);
+        }
+
+        public async Task<(bool Success, string Message, IEnumerable<PatientAppointmentResult> Appointments)> GetUpcomingAppointmentsForCurrentPatient()
+        {
+            var patientId = await ResolveCurrentPatientIdAsync();
+            if (!patientId.HasValue)
+            {
+                return (false, "Patient profile was not found for authenticated user.", Enumerable.Empty<PatientAppointmentResult>());
+            }
+
+            var nowUtc = DateTime.UtcNow;
+            var appointments = (await _appointmentRepository.GetPatientAppointments(
+                    patientId.Value,
+                    fromDateTime: nowUtc,
+                    appointmentStatus: 1))
+                .Where(appointment => appointment.AppointmentStatus == 1 && appointment.AppointmentTime >= nowUtc)
+                .OrderBy(appointment => appointment.AppointmentTime)
+                .ToList();
+
+            return (true, "Upcoming appointments retrieved successfully.", appointments);
+        }
+
+        public async Task<(bool Success, string Message, Appointment? Appointment)> CancelCurrentPatientAppointment(int appointmentId)
+        {
+            if (appointmentId <= 0)
+            {
+                return (false, "Appointment ID is required.", null);
+            }
+
+            var patientId = await ResolveCurrentPatientIdAsync();
+            if (!patientId.HasValue)
+            {
+                return (false, "Patient profile was not found for authenticated user.", null);
+            }
+
+            var appointment = await _appointmentRepository.GetAppointmentById(appointmentId);
+            if (appointment is null)
+            {
+                return (false, "Appointment was not found.", null);
+            }
+
+            if (appointment.PatientId != patientId.Value)
+            {
+                return (false, "You are not authorized to cancel this appointment.", null);
+            }
+
+            if (!appointment.AppointmentTime.HasValue || appointment.AppointmentTime.Value <= DateTime.UtcNow)
+            {
+                return (false, "Only future appointments can be cancelled.", appointment);
+            }
+
+            if (appointment.AppointmentStatus != 1)
+            {
+                return (false, "Only scheduled appointments can be cancelled.", appointment);
+            }
+
+            return await CancelAppointment(appointmentId);
         }
 
         private async Task<(bool Success, string Message)> ValidateAppointmentAvailabilityInternal(
@@ -185,7 +261,7 @@ namespace CareConnect.Services
             return (true, "Physician is available.");
         }
 
-        public async Task<IEnumerable<DateTime>> GetAvailableAppointmentSlots(int physicianId, DateTime date)
+        public async Task<IEnumerable<DateTime>> GetAvailableAppointmentSlots(int physicianId, DateTime date, int? patientId = null)
         {
             if (physicianId <= 0)
             {
@@ -214,7 +290,16 @@ namespace CareConnect.Services
                 physicianId,
                 scheduleDate,
                 scheduleDate.AddDays(1)))
+                .Where(appointment => appointment.AppointmentStatus == 1)
                 .ToList();
+
+            List<PatientBlockingWindowResult> patientBlockingWindows = [];
+            if (patientId.HasValue && patientId.Value > 0)
+            {
+                patientBlockingWindows = (await _appointmentRepository.GetPatientBlockingWindowsByDate(patientId.Value, scheduleDate)).ToList();
+            }
+
+            var nowUtc = DateTime.UtcNow;
 
             var availableSlots = new List<DateTime>();
 
@@ -231,8 +316,12 @@ namespace CareConnect.Services
                     var overlapsAppointment = appointments.Any(appointment =>
                         appointment.AppointmentTime.HasValue
                         && Overlaps(slotStart, slotEnd, appointment.AppointmentTime.Value, appointment.AppointmentTime.Value.Add(AppointmentDuration)));
+                    var overlapsPatientConflictWindow = patientBlockingWindows.Any(window =>
+                        slotStart < window.BlockWindowEndUtcExclusive
+                        && slotEnd > window.BlockWindowStartUtc);
+                    var isPastSlot = slotStart <= nowUtc;
 
-                    if (!overlapsTimeOff && !overlapsAppointment)
+                    if (!overlapsTimeOff && !overlapsAppointment && !overlapsPatientConflictWindow && !isPastSlot)
                     {
                         availableSlots.Add(slotStart);
                     }
@@ -242,6 +331,20 @@ namespace CareConnect.Services
             }
 
             return availableSlots;
+        }
+
+        public async Task<IEnumerable<DoctorDayAppointmentResult>> GetDoctorDayAppointments(int physicianId, DateTime date)
+        {
+            if (physicianId <= 0)
+            {
+                return Enumerable.Empty<DoctorDayAppointmentResult>();
+            }
+
+            var appointments = await _appointmentRepository.GetDoctorDayAppointments(physicianId, date.Date);
+
+            return appointments
+                .OrderBy(appointment => appointment.AppointmentTime)
+                .ToList();
         }
 
         public async Task<bool> HasConflictingAppointmentsForScheduleAsync(PhysicianScheduleDto physicianSchedule)
@@ -352,7 +455,7 @@ namespace CareConnect.Services
 
             return dayAppointments.Any(existingAppointment =>
                 (!excludedAppointmentId.HasValue || existingAppointment.AppointmentId != excludedAppointmentId.Value)
-                && (existingAppointment.AppointmentStatus is null || existingAppointment.AppointmentStatus.Value)
+                && existingAppointment.AppointmentStatus == 1
                 &&
                 existingAppointment.AppointmentTime.HasValue
                 && Overlaps(
@@ -406,6 +509,49 @@ namespace CareConnect.Services
         private static bool Overlaps(DateTime firstStart, DateTime firstEnd, DateTime secondStart, DateTime secondEnd)
         {
             return firstStart < secondEnd && firstEnd > secondStart;
+        }
+
+        private async Task<int?> ResolveCurrentPatientIdAsync()
+        {
+            var currentUser = _httpContextAccessor.HttpContext?.User;
+            if (currentUser?.Identity?.IsAuthenticated != true)
+            {
+                return null;
+            }
+
+            var userId = CurrentUserHelper.GetUserId(currentUser);
+            if (!userId.HasValue)
+            {
+                return null;
+            }
+
+            return await _userService.ResolvePatientIdByUserIdAsync(userId.Value);
+        }
+
+        private static bool TryMapBookingConflict(SqlException ex, out string message)
+        {
+            var rawMessage = ex.Message ?? string.Empty;
+
+            if (ex.Number == 2601 || ex.Number == 2627 || rawMessage.Contains("BOOKING_DENIED_DOCTOR_SLOT_TAKEN", StringComparison.OrdinalIgnoreCase))
+            {
+                message = "Selected time slot is no longer available for this doctor.";
+                return true;
+            }
+
+            if (rawMessage.Contains("BOOKING_DENIED_PATIENT_SAME_DOCTOR_SAME_DAY", StringComparison.OrdinalIgnoreCase))
+            {
+                message = "Patient already has a scheduled appointment with this doctor on the selected day.";
+                return true;
+            }
+
+            if (rawMessage.Contains("BOOKING_DENIED_PATIENT_TIME_CONFLICT_60_MIN", StringComparison.OrdinalIgnoreCase))
+            {
+                message = "Patient has another scheduled appointment within 60 minutes of the selected time.";
+                return true;
+            }
+
+            message = string.Empty;
+            return false;
         }
     }
 }

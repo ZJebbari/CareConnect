@@ -19,6 +19,16 @@ export interface SetPasswordRequest {
   newPassword: string;
 }
 
+export interface RegisterPatientRequest {
+  fullName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  address: string;
+  gender: string;
+  password: string;
+}
+
 export interface ApiMessageResponse {
   message: string;
 }
@@ -55,6 +65,10 @@ export class AuthService {
 
   public setPassword(payload: SetPasswordRequest): Observable<ApiMessageResponse> {
     return this.http.post<ApiMessageResponse>(`${this.baseUrl}/set-password`, payload);
+  }
+
+  public registerPatient(payload: RegisterPatientRequest): Observable<ApiMessageResponse> {
+    return this.http.post<ApiMessageResponse>(`${this.baseUrl}/register`, payload);
   }
 
   // ---- LOGOUT ----

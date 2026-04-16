@@ -46,7 +46,9 @@ export class LoginComponent {
       this.roleHint = role === 'patient' ? 'patient' : 'staff';
       this.successMessage = params.get('reset') === 'success'
         ? 'Password updated. You can now sign in with your new password.'
-        : null;
+        : params.get('registered') === 'success'
+          ? 'Account created successfully. You can now sign in.'
+          : null;
     });
   }
 
@@ -73,7 +75,7 @@ export class LoginComponent {
         }
 
         if (role === 'patient') {
-          this.router.navigate(['patients']);
+          this.router.navigate(['patient/book']);
           return;
         }
 

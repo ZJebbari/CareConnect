@@ -59,6 +59,14 @@ export interface DeleteResponse {
   message: string;
 }
 
+export interface DoctorDayAppointment {
+  appointmentId: number;
+  patientName: string;
+  appointmentTime: string;
+  appointmentTypeName: string;
+  specialtyName: string | null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -205,10 +213,21 @@ export class SchedulingService {
     physicianId: number,
     date: Date
   ): Observable<string[]> {
-    const params = new HttpParams().set('date', date.toISOString());
+    const bookingDay = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const params = new HttpParams().set('date', bookingDay);
 
     return this.http.get<string[]>(
       `${this.appointmentBaseUrl}/Availability/${physicianId}`,
+      { params }
+    );
+  }
+
+  public getCurrentDoctorAppointments(date: Date): Observable<DoctorDayAppointment[]> {
+    const bookingDay = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const params = new HttpParams().set('date', bookingDay);
+
+    return this.http.get<DoctorDayAppointment[]>(
+      '/api/AppointmentScheduling/Doctor/MyAppointments',
       { params }
     );
   }

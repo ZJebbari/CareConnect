@@ -1,6 +1,7 @@
 ﻿using CareConnect.Common;           // Contains JwtHelper for generating JWT tokens
 using CareConnect.Models.Dtos;      // LoginDto model for request payload
 using CareConnect.Services;         // IUserService for validating user credentials
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;     // ASP.NET Core MVC utilities for controllers
 
 namespace CareConnect.Controllers
@@ -13,6 +14,29 @@ namespace CareConnect.Controllers
     [Route("api/[controller]")]
     public class AuthController(IUserService _userService, IConfiguration _config) : ControllerBase
     {
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterPatient([FromBody] PatientRegistrationDto request)
+        {
+            var result = await _userService.RegisterPatientAsync(request);
+
+            if (!result.Success)
+            {
+                if (string.Equals(result.Message, "An account with this email already exists.", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Conflict(new { message = result.Message });
+                }
+
+                return BadRequest(new { message = result.Message });
+            }
+
+            return Ok(new
+            {
+                message = result.Message,
+                data = result.Data
+            });
+        }
+
         // POST /api/Auth/login
         // Accepts login credentials and returns a signed JWT token if valid
         [HttpPost("login")]

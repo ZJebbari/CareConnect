@@ -1,0 +1,110 @@
+<section class="patient-booking">
+  <mat-card>
+    <h1>Book an Appointment</h1>
+    <p class="subtitle">Choose specialty, doctor, and your preferred time slot.</p>
+    <a routerLink="/patient/appointments">View my upcoming appointments</a>
+
+    <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    <p class="success" *ngIf="successMessage()">{{ successMessage() }}</p>
+
+    <div *ngIf="loading()" class="loading">Loading booking options...</div>
+
+    <mat-stepper [linear]="true" *ngIf="!loading()">
+      <mat-step [stepControl]="specialtyForm">
+        <form [formGroup]="specialtyForm">
+          <ng-template matStepLabel>Select specialty</ng-template>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Specialty</mat-label>
+            <mat-select formControlName="specialtyId">
+              <mat-option *ngFor="let specialty of specialties()" [value]="specialty.specialtyId">
+                {{ specialty.specialtyName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div>
+            <button mat-raised-button color="primary" matStepperNext [disabled]="specialtyForm.invalid">
+              Next
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="doctorForm">
+        <form [formGroup]="doctorForm">
+          <ng-template matStepLabel>Select doctor</ng-template>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Doctor</mat-label>
+            <mat-select formControlName="physicianId">
+              <mat-option *ngFor="let doctor of filteredDoctors()" [value]="doctor.physicianId">
+                {{ doctor.fullName }} - {{ doctor.specialtyName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-raised-button color="primary" matStepperNext [disabled]="doctorForm.invalid">
+              Next
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="slotForm">
+        <form [formGroup]="slotForm">
+          <ng-template matStepLabel>Select date and slot</ng-template>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Appointment date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="appointmentDate" />
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <div class="loading" *ngIf="loadingSlots()">Loading available slots...</div>
+
+          <div class="slots" *ngIf="!loadingSlots()">
+            <button
+              type="button"
+              mat-stroked-button
+              *ngFor="let slot of availableSlots()"
+              [class.selected]="isSelectedSlot(slot)"
+              (click)="selectSlot(slot)"
+            >
+              {{ slot | date: 'shortTime' }}
+            </button>
+          </div>
+
+          <p class="hint" *ngIf="!loadingSlots() && availableSlots().length === 0">
+            No slots found for this date.
+          </p>
+
+          <div class="actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-raised-button color="primary" matStepperNext [disabled]="slotForm.invalid">
+              Next
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>Confirm</ng-template>
+
+        <div class="summary">
+          <p><strong>Specialty:</strong> {{ selectedSpecialty()?.specialtyName }}</p>
+          <p><strong>Doctor:</strong> {{ selectedDoctor()?.fullName }}</p>
+          <p><strong>Date:</strong> {{ slotForm.controls.appointmentDate.value | date: 'fullDate' }}</p>
+          <p><strong>Time:</strong> {{ slotForm.controls.timeSlot.value | date: 'shortTime' }}</p>
+        </div>
+
+        <div class="actions">
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-raised-button color="primary" [disabled]="submitting()" (click)="submitBooking()">
+            {{ submitting() ? 'Booking...' : 'Confirm booking' }}
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </mat-card>
+</section>

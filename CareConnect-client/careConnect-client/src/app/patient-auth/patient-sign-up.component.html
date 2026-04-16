@@ -1,0 +1,55 @@
+<section class="patient-sign-up">
+  <mat-card>
+    <h1>Create your CareConnect account</h1>
+    <p class="subtitle">Sign up as a patient to book your appointment online.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="fullName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date of birth</mat-label>
+        <input matInput type="date" formControlName="dateOfBirth" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Gender</mat-label>
+        <mat-select formControlName="gender">
+          <mat-option value="Male">Male</mat-option>
+          <mat-option value="Female">Female</mat-option>
+          <mat-option value="Other">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading() || form.invalid">
+        {{ loading() ? 'Creating account...' : 'Create account' }}
+      </button>
+
+      <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    </form>
+
+    <a routerLink="/login" [queryParams]="{ role: 'patient' }">Already have an account? Sign in</a>
+  </mat-card>
+</section>

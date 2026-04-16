@@ -13,7 +13,7 @@ public partial class Appointment
 
     public int? TypeId { get; set; }
 
-    public bool? AppointmentStatus { get; set; }
+    public int? AppointmentStatus { get; set; }
 
     public DateTime? AppointmentTime { get; set; }
 

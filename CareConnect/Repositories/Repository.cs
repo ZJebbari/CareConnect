@@ -189,6 +189,46 @@ namespace CareConnect.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<BookingSpecialtyResult>> GetBookingSpecialties()
+        {
+            var specialties = await Connection.QueryAsync<SpecialtyResult>(
+                "dbo.usp_Specialty_GetAll",
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return specialties
+                .Select(specialty => new BookingSpecialtyResult
+                {
+                    SpecialtyId = specialty.SpecialtyID,
+                    SpecialtyName = specialty.Specialty
+                })
+                .OrderBy(specialty => specialty.SpecialtyName)
+                .ToList();
+        }
+
+        public async Task<IEnumerable<BookingPhysicianResult>> GetBookingPhysiciansBySpecialty(int specialtyId)
+        {
+            var physicians = await Connection.QueryAsync<PhysicianResult>(
+                "usp_Physician_GetAll",
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return physicians
+                .Where(physician => physician.Availability && physician.SpecialtyId == specialtyId)
+                .Select(physician => new BookingPhysicianResult
+                {
+                    PhysicianId = physician.PhysicianId,
+                    FullName = physician.FullName,
+                    SpecialtyId = physician.SpecialtyId,
+                    SpecialtyName = physician.Specialty,
+                    Bio = physician.Bio
+                })
+                .OrderBy(physician => physician.FullName)
+                .ToList();
+        }
+
         public async Task<IEnumerable<PersonnelResult>> GetAllPersonnels()
         {
             var result = await Connection.QueryAsync<PersonnelResult>(

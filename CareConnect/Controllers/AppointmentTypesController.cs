@@ -16,5 +16,13 @@ namespace CareConnect.Controllers
             var appointmentTypes = await _service.GetAllAppointmentTypes();
             return Ok(appointmentTypes);
         }
+
+        [HttpGet("Patient/Booking/AppointmentTypes")]
+        [Authorize(Roles = "Patient")]
+        public async Task<ActionResult<IEnumerable<AppointmentTypeResult>>> GetPatientBookingAppointmentTypes()
+        {
+            var appointmentTypes = await _service.GetAllAppointmentTypes();
+            return Ok(appointmentTypes);
+        }
     }
 }

@@ -108,6 +108,42 @@
         }
       </mat-card>
 
+      <mat-card class="agenda-card">
+        <div class="card-heading">
+          <div>
+            <p class="card-label">Booked Appointments</p>
+            <h2>{{ bookedAppointments().length }} booked this day</h2>
+          </div>
+
+          <mat-chip class="status-chip booked">Booked</mat-chip>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        @if (bookedAppointments().length === 0) {
+          <div class="empty-panel">
+            <mat-icon>event_available</mat-icon>
+            <p>No booked appointments for this day.</p>
+          </div>
+        } @else {
+          <mat-list>
+            @for (appointment of bookedAppointments(); track appointment.appointmentId) {
+              <mat-list-item>
+                <span matListItemTitle>
+                  {{ appointment.appointmentTime | date:'shortTime' }} · {{ appointment.patientName }}
+                </span>
+                <span matListItemLine>
+                  {{ appointment.appointmentTypeName }}
+                  @if (appointment.specialtyName) {
+                    · {{ appointment.specialtyName }}
+                  }
+                </span>
+              </mat-list-item>
+            }
+          </mat-list>
+        }
+      </mat-card>
+
       <mat-card class="summary-card">
         <div class="card-heading compact">
           <div>

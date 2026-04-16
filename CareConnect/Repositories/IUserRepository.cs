@@ -1,4 +1,5 @@
 ﻿using CareConnect.Models.Database.results;
+using CareConnect.Models.Dtos;
 
 namespace CareConnect.Repositories
 {
@@ -18,6 +19,8 @@ namespace CareConnect.Repositories
         UserLoginResult ToLoginResult(UserAuthResult authResult);
 
         Task UpdatePasswordHashAsync(int userId, string passwordHash);
+        Task<PatientRegistrationResult?> RegisterPatientAsync(PatientRegistrationDto registration, string passwordHash);
+        Task<PatientIdentityResult?> GetPatientByUserIdAsync(int userId);
     }
 }
 

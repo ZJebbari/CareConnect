@@ -1,0 +1,53 @@
+.patient-booking {
+  padding: 1.5rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+mat-card {
+  width: min(900px, 100%);
+}
+
+.subtitle {
+  margin-top: 0;
+  color: #666;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.slots {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+.selected {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+.summary {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.loading,
+.hint {
+  color: #666;
+}
+
+.error {
+  color: #b3261e;
+}
+
+.success {
+  color: #146c2e;
+}

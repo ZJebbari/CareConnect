@@ -20,6 +20,8 @@ namespace CareConnect.Services
         Task<string> UpdatePhysician(PhysicianDto physician);
         Task<string> DeletePhysicianByUserID(long userID);
         Task<IEnumerable<SpecialtyResult>> GetAllSpecialty();
+        Task<IEnumerable<BookingSpecialtyResult>> GetBookingSpecialties();
+        Task<IEnumerable<BookingPhysicianResult>> GetBookingPhysiciansBySpecialty(int specialtyId);
 
         // Personnels
         Task<IEnumerable<PersonnelResult>> GetAllPersonnels();

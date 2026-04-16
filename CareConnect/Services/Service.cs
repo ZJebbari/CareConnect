@@ -94,6 +94,21 @@ namespace CareConnect.Services
             return await _repository.GetAllSpecialty();
         }
 
+        public async Task<IEnumerable<BookingSpecialtyResult>> GetBookingSpecialties()
+        {
+            return await _repository.GetBookingSpecialties();
+        }
+
+        public async Task<IEnumerable<BookingPhysicianResult>> GetBookingPhysiciansBySpecialty(int specialtyId)
+        {
+            if (specialtyId <= 0)
+            {
+                return [];
+            }
+
+            return await _repository.GetBookingPhysiciansBySpecialty(specialtyId);
+        }
+
         public async Task<IEnumerable<PersonnelResult>> GetAllPersonnels()
         {
             return await _repository.GetAllPersonnels();

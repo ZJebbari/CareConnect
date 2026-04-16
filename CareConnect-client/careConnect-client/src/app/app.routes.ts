@@ -11,6 +11,10 @@ import { SetPasswordComponent } from './set-password/set-password.component';
 import { DoctorMyCalendarComponent } from './doctor-scheduling/doctor-my-calendar/doctor-my-calendar.component';
 import { DoctorMyScheduleComponent } from './doctor-scheduling/doctor-my-schedule/doctor-my-schedule.component';
 import { DoctorMyTimeOffComponent } from './doctor-scheduling/doctor-my-time-off/doctor-my-time-off.component';
+import { patientGuard } from './guards/patient.guard';
+import { PatientSignUpComponent } from './patient-auth/patient-sign-up.component';
+import { PatientBookAppointmentComponent } from './patient-booking/patient-book-appointment.component';
+import { PatientAppointmentsComponent } from './patient-booking/patient-appointments.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +28,20 @@ export const routes: Routes = [
   {
     path: 'set-password',
     component: SetPasswordComponent,
+  },
+  {
+    path: 'patient/sign-up',
+    component: PatientSignUpComponent,
+  },
+  {
+    path: 'patient/book',
+    component: PatientBookAppointmentComponent,
+    canActivate: [patientGuard],
+  },
+  {
+    path: 'patient/appointments',
+    component: PatientAppointmentsComponent,
+    canActivate: [patientGuard],
   },
   {
     path: 'home',

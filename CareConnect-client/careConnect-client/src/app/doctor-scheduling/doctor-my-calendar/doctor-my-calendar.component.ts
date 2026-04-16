@@ -47,6 +47,9 @@ export class DoctorMyCalendarComponent {
   protected readonly availableSlots = computed(() =>
     this.schedulingData.availableSlotData()
   );
+  protected readonly bookedAppointments = computed(() =>
+    this.schedulingData.doctorDayAppointmentData()
+  );
   protected readonly timeOffEntries = computed(() =>
     this.schedulingData.physicianTimeOffData()
   );

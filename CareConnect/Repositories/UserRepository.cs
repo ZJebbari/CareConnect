@@ -1,5 +1,6 @@
 ﻿using CareConnect.Common;
 using CareConnect.Models.Database.results;
+using CareConnect.Models.Dtos;
 using Dapper;
 using System.Data;
 
@@ -59,6 +60,39 @@ namespace CareConnect.Repositories
                 commandType: CommandType.Text,
                 transaction: _session.Transaction
             );
+        }
+
+        public async Task<PatientRegistrationResult?> RegisterPatientAsync(PatientRegistrationDto registration, string passwordHash)
+        {
+            var result = await Connection.QuerySingleOrDefaultAsync<PatientRegistrationResult>(
+                "dbo.usp_Patient_Register",
+                new
+                {
+                    registration.FullName,
+                    registration.Email,
+                    registration.Phone,
+                    registration.DateOfBirth,
+                    registration.Address,
+                    registration.Gender,
+                    PasswordHash = passwordHash
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
+        public async Task<PatientIdentityResult?> GetPatientByUserIdAsync(int userId)
+        {
+            var result = await Connection.QuerySingleOrDefaultAsync<PatientIdentityResult>(
+                "dbo.usp_Patient_GetByUserID",
+                new { UserID = userId },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
         }
     }
 }

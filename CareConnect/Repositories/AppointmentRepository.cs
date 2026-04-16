@@ -1,4 +1,5 @@
 using CareConnect.Common;
+using CareConnect.Models.Database.results;
 using CareConnect.Models.Dtos;
 using Dapper;
 using System.Data;
@@ -39,16 +40,13 @@ namespace CareConnect.Repositories
         public async Task<Appointment?> CreateAppointment(Appointment appointment)
         {
             var result = await Connection.QuerySingleOrDefaultAsync<Appointment>(
-                "dbo.CreateAppointment",
+                "dbo.usp_Appointment_ValidateAndCreate",
                 new
                 {
-                    appointment.PatientId,
-                    appointment.PhysicianId,
-                    appointment.TypeId,
-                    AppointmentStatus = appointment.AppointmentStatus ?? true,
-                    appointment.AppointmentTime,
-                    CreatedAt = appointment.CreatedAt ?? DateTime.UtcNow,
-                    UpdatedAt = appointment.UpdatedAt
+                    PatientID = appointment.PatientId,
+                    PhysicianID = appointment.PhysicianId,
+                    TypeID = appointment.TypeId,
+                    AppointmentTime = appointment.AppointmentTime
                 },
                 commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction
@@ -67,7 +65,7 @@ namespace CareConnect.Repositories
                     appointment.PatientId,
                     appointment.PhysicianId,
                     appointment.TypeId,
-                    AppointmentStatus = appointment.AppointmentStatus ?? true,
+                    AppointmentStatus = appointment.AppointmentStatus ?? 1,
                     appointment.AppointmentTime,
                     UpdatedAt = appointment.UpdatedAt ?? DateTime.UtcNow
                 },
@@ -86,6 +84,60 @@ namespace CareConnect.Repositories
                 {
                     AppointmentId = appointmentId,
                     UpdatedAt = updatedAt
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
+        public async Task<IEnumerable<PatientBlockingWindowResult>> GetPatientBlockingWindowsByDate(int patientId, DateTime date)
+        {
+            var result = await Connection.QueryAsync<PatientBlockingWindowResult>(
+                "dbo.usp_Appointment_GetPatientBlockingWindowsByDate",
+                new
+                {
+                    PatientID = patientId,
+                    Date = date.Date
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
+        public async Task<IEnumerable<PatientAppointmentResult>> GetPatientAppointments(
+            int patientId,
+            DateTime? fromDateTime = null,
+            DateTime? toDateTime = null,
+            int? appointmentStatus = null)
+        {
+            var result = await Connection.QueryAsync<PatientAppointmentResult>(
+                "dbo.usp_Appointment_GetByPatientID",
+                new
+                {
+                    PatientID = patientId,
+                    FromDateTime = fromDateTime,
+                    ToDateTime = toDateTime,
+                    AppointmentStatus = appointmentStatus
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: _session.Transaction
+            );
+
+            return result;
+        }
+
+        public async Task<IEnumerable<DoctorDayAppointmentResult>> GetDoctorDayAppointments(int physicianId, DateTime date)
+        {
+            var result = await Connection.QueryAsync<DoctorDayAppointmentResult>(
+                "dbo.usp_Appointment_GetDoctorDayAppointments",
+                new
+                {
+                    PhysicianID = physicianId,
+                    Date = date.Date
                 },
                 commandType: CommandType.StoredProcedure,
                 transaction: _session.Transaction

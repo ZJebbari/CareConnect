@@ -76,6 +76,7 @@
 .setup-card,
 .calendar-card,
 .availability-card,
+.agenda-card,
 .summary-card {
   border-radius: 20px;
   border: 1px solid rgba(26, 60, 95, 0.08);
@@ -123,6 +124,7 @@
 
 .calendar-card,
 .availability-card,
+.agenda-card,
 .summary-card {
   padding: 20px;
 }
@@ -164,6 +166,10 @@
 
 .status-chip.refreshing {
   background: #9d6400;
+}
+
+.status-chip.booked {
+  background: #0f5f96;
 }
 
 .empty-panel {

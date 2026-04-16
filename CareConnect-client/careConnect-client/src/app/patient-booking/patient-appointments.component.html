@@ -1,0 +1,38 @@
+<section class="patient-appointments">
+  <mat-card>
+    <h1>My Upcoming Appointments</h1>
+
+    <p class="success" *ngIf="successMessage()">{{ successMessage() }}</p>
+    <p class="error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+    <div class="loading" *ngIf="loading()">
+      <mat-spinner diameter="28"></mat-spinner>
+      <span>Loading appointments...</span>
+    </div>
+
+    <div class="empty" *ngIf="!loading() && appointments().length === 0">
+      No upcoming appointments found.
+    </div>
+
+    <div class="appointment-list" *ngIf="!loading() && appointments().length > 0">
+      <article class="appointment-card" *ngFor="let appointment of appointments(); trackBy: trackByAppointmentId">
+        <div>
+          <h2>{{ appointment.physicianName }}</h2>
+          <p *ngIf="appointment.specialtyName"><strong>Specialty:</strong> {{ appointment.specialtyName }}</p>
+          <p><strong>Type:</strong> {{ appointment.appointmentTypeName }}</p>
+          <p><strong>Date:</strong> {{ appointment.appointmentTime | date: 'fullDate' }}</p>
+          <p><strong>Time:</strong> {{ appointment.appointmentTime | date: 'shortTime' }}</p>
+        </div>
+
+        <button
+          mat-stroked-button
+          color="warn"
+          [disabled]="isCancelling(appointment.appointmentId)"
+          (click)="cancelAppointment(appointment)"
+        >
+          {{ isCancelling(appointment.appointmentId) ? 'Cancelling...' : 'Cancel Appointment' }}
+        </button>
+      </article>
+    </div>
+  </mat-card>
+</section>

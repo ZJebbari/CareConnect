@@ -114,6 +114,27 @@ namespace CareConnect.Controllers
             return Ok(result);
         }
 
+        [HttpGet("Patient/Booking/Specialties")]
+        [Authorize(Roles = "Patient")]
+        public async Task<ActionResult<IEnumerable<BookingSpecialtyResult>>> GetBookingSpecialties()
+        {
+            var result = await _service.GetBookingSpecialties();
+            return Ok(result);
+        }
+
+        [HttpGet("Patient/Booking/Physicians")]
+        [Authorize(Roles = "Patient")]
+        public async Task<ActionResult<IEnumerable<BookingPhysicianResult>>> GetBookingPhysiciansBySpecialty([FromQuery] int specialtyId)
+        {
+            if (specialtyId <= 0)
+            {
+                return BadRequest(new { message = "Specialty is required." });
+            }
+
+            var result = await _service.GetBookingPhysiciansBySpecialty(specialtyId);
+            return Ok(result);
+        }
+
         [HttpGet("Admin/Personnels")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<PersonnelResult>>> GetAllPersonnels()

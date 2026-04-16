@@ -3,7 +3,7 @@ import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PhysicianScheduleResult } from '../models/physicianScheduleResult';
 import { PhysicianTimeOffResult } from '../models/physicianTimeOffResult';
-import { SchedulingService } from './scheduling.service';
+import { DoctorDayAppointment, SchedulingService } from './scheduling.service';
 import { SchedulingSocketService } from './scheduling-socket.service';
 
 @Injectable({
@@ -25,6 +25,9 @@ export class dataSchedulingService {
 
   private readonly availableSlots = signal<Date[]>([]);
   public readonly availableSlotData = computed(() => this.availableSlots());
+
+  private readonly doctorDayAppointments = signal<DoctorDayAppointment[]>([]);
+  public readonly doctorDayAppointmentData = computed(() => this.doctorDayAppointments());
 
   private readonly refreshing = signal(false);
   public readonly isRefreshing = computed(() => this.refreshing());
@@ -75,6 +78,7 @@ export class dataSchedulingService {
     this.physicianSchedules.set([]);
     this.physicianTimeOff.set([]);
     this.availableSlots.set([]);
+    this.doctorDayAppointments.set([]);
   }
 
   public refreshCurrentCalendarData() {
@@ -101,14 +105,22 @@ export class dataSchedulingService {
       schedules: this.api.getPhysicianSchedules(physicianId, startOfDay, true),
       timeOff: this.api.getPhysicianTimeOff(physicianId, startOfDay, endOfDay),
       availableSlots: this.api.getAvailableAppointmentSlots(physicianId, startOfDay),
+      bookedAppointments: this.api.getCurrentDoctorAppointments(startOfDay),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ schedules, timeOff, availableSlots }) => {
+        next: ({ schedules, timeOff, availableSlots, bookedAppointments }) => {
           this.physicianSchedules.set(schedules);
           this.physicianTimeOff.set(timeOff);
           this.availableSlots.set(
             availableSlots.map((slot) => new Date(slot))
+          );
+          this.doctorDayAppointments.set(
+            [...bookedAppointments].sort(
+              (left, right) =>
+                new Date(left.appointmentTime).getTime() -
+                new Date(right.appointmentTime).getTime()
+            )
           );
           this.refreshing.set(false);
           this.socket.clearAppointmentCreated();

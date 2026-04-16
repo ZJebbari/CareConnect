@@ -2,6 +2,7 @@
 using CareConnect.Models.Database.results;
 using CareConnect.Models.Dtos;
 using CareConnect.Repositories;
+using Microsoft.Data.SqlClient;
 
 namespace CareConnect.Services
 {
@@ -79,6 +80,74 @@ namespace CareConnect.Services
             await _userRepository.UpdatePasswordHashAsync(user.UserId, newHash);
 
             return (true, "Password updated successfully.");
+        }
+
+        public async Task<(bool Success, string Message, PatientRegistrationResult? Data)> RegisterPatientAsync(PatientRegistrationDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.FullName)
+                || string.IsNullOrWhiteSpace(request.Email)
+                || string.IsNullOrWhiteSpace(request.Password)
+                || string.IsNullOrWhiteSpace(request.Phone)
+                || string.IsNullOrWhiteSpace(request.Address)
+                || string.IsNullOrWhiteSpace(request.Gender))
+            {
+                return (false, "All required fields must be provided.", null);
+            }
+
+            if (request.Password.Length < 8)
+            {
+                return (false, "Password must be at least 8 characters.", null);
+            }
+
+            var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
+            if (existingUser is not null)
+            {
+                return (false, "An account with this email already exists.", null);
+            }
+
+            var passwordHash = PasswordHasher.HashPassword(request.Password);
+            PatientRegistrationResult? result;
+            try
+            {
+                result = await _userRepository.RegisterPatientAsync(request, passwordHash);
+            }
+            catch (SqlException ex) when (IsDuplicateEmailException(ex))
+            {
+                return (false, "An account with this email already exists.", null);
+            }
+
+            if (result is null || result.PatientID <= 0 || result.UserID <= 0)
+            {
+                return (false, "Failed to register patient account.", null);
+            }
+
+            return (true, "Patient registered successfully.", result);
+        }
+
+        public async Task<int?> ResolvePatientIdByUserIdAsync(int userId)
+        {
+            if (userId <= 0)
+            {
+                return null;
+            }
+
+            var patient = await _userRepository.GetPatientByUserIdAsync(userId);
+            if (patient is null || patient.PatientID <= 0)
+            {
+                return null;
+            }
+
+            return patient.PatientID;
+        }
+
+        private static bool IsDuplicateEmailException(SqlException ex)
+        {
+            if (ex.Number == 2601 || ex.Number == 2627 || ex.Number == 52002)
+            {
+                return true;
+            }
+
+            return ex.Message.Contains("EMAIL_ALREADY_EXISTS", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

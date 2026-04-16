@@ -53,6 +53,7 @@ builder.Services.AddScoped<IPhysicianTimeOffRepository, PhysicianTimeOffReposito
 builder.Services.AddScoped<IAppointmentSchedulingService, AppointmentSchedulingService>();
 builder.Services.AddScoped<IPhysicianScheduleService, PhysicianScheduleService>();
 builder.Services.AddScoped<IPhysicianTimeOffService, PhysicianTimeOffService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IPasswordHasher<object>, PasswordHasher<object>>();
 

@@ -6,7 +6,7 @@
         public int UserId { get; set; }
         public bool Availability { get; set; }
         public string Bio { get; set; }
-        public int SpecialtyID { get; set; }
+        public int SpecialtyId { get; set; }
         public string Specialty { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
